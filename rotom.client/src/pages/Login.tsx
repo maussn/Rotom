@@ -30,7 +30,7 @@ export const Login = () => {
       </div>
 
       <div className="button-row">
-        <button>Register</button>
+        {/* <button>Register</button> */}
         <button onClick={cancelLogin}>Cancel</button>
         <button onClick={handleLogin}>Login</button>
       </div>
