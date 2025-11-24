@@ -5,7 +5,6 @@ import cats.effect.*
 import io.circe.*
 import io.circe.literal.*
 import io.circe.generic.auto.*
-// import io.circe.generic.semiauto
 import munit.CatsEffectSuite
 import nl.sogyo.apigateway.GatewayServices.getServices
 import nl.sogyo.persistence.Account
@@ -52,8 +51,6 @@ class AuthenticationServiceTest extends CatsEffectSuite {
   val correctUsername = "jan"
   val correctPassword = "correctpassword"
 
-  // implicit val loginDecoder: Decoder[UUID] = semiauto.deriveDecoder[UUID]
-  // implicit def loginEntityDecoder[F[_]]: EntityDecoder[F, UUID] = jsonOf[F, UUID]
   implicit val loginDecoder: EntityDecoder[IO, SuccessfulLogin] = jsonOf[IO, SuccessfulLogin]
 
   def createAccountsTable(db: AccountsDatabase) =
