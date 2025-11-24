@@ -14,6 +14,7 @@ import org.http4s.dsl.io.*
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+import java.util.UUID
 
 case class UserLogin(username: String, password: String)
 
@@ -24,7 +25,7 @@ implicit val helloEncoder: Encoder[Hello] = semiauto.deriveEncoder[Hello]
 implicit def helloEntityEncoder[F[_]]: EntityEncoder[F, Hello] = jsonEncoderOf[F, Hello]
 
 
-case class SuccesfulLogin(uuid: String)
+case class SuccesfulLogin(uuid: UUID)
 implicit val loginEncoder: Encoder[SuccesfulLogin] = semiauto.deriveEncoder[SuccesfulLogin]
 implicit def loginEntityEncoder[F[_]]: EntityEncoder[F, SuccesfulLogin] = jsonEncoderOf[F, SuccesfulLogin]
 

@@ -6,7 +6,7 @@ interface AuthContextType {
   isLoggedIn: boolean
   username: string | null
   id: string | null
-  login: (username: string, id: string) => void
+  login: (username: string, password: string) => void
   logout: () => void
 }
 
@@ -19,12 +19,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (name: string, password: string) => {
     const body = await sendLoginRequest(name, password)
+    console.log(body)
+    console.log(typeof body.uuid)
     if (body.uuid) {
       setLoggedIn(true)
       setUsername(name)
-      setId(body.id)
+      setId(body.uuid)
     } else {
-      console.log(body)
+
     }
   }
 
