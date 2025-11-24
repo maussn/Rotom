@@ -31,8 +31,8 @@ export const Login = () => {
 
       <div className="button-row">
         {/* <button>Register</button> */}
-        <button onClick={cancelLogin}>Cancel</button>
         <button onClick={handleLogin}>Login</button>
+        <button onClick={cancelLogin}>Cancel</button>
       </div>
     </div>
   </div>
