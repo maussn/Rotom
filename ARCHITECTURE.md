@@ -1,12 +1,16 @@
 # Architecture
-
+Diagram of services present in Rotom.
 ```mermaid
 flowchart LR
-    client(Browser)
+    subgraph Frontend
+    client(Client)
+    end
+    subgraph Backend
     apigateway(API-Gateway)
     kafka(Kafka)
-    accounts(AcccountsManager)
+    accounts[(Accounts Table)]
     services(Other Services)
+    end
 
     client --> apigateway
     apigateway -- produce event --> kafka
