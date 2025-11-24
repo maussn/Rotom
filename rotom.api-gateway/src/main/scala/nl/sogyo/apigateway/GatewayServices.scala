@@ -17,13 +17,7 @@ import scala.util.Try
 import java.util.UUID
 
 case class UserLogin(username: String, password: String)
-
 implicit val decoder: EntityDecoder[IO, UserLogin] = jsonOf[IO, UserLogin]
-
-case class Hello(message: String)
-implicit val helloEncoder: Encoder[Hello] = semiauto.deriveEncoder[Hello]
-implicit def helloEntityEncoder[F[_]]: EntityEncoder[F, Hello] = jsonEncoderOf[F, Hello]
-
 
 case class SuccessfulLogin(uuid: UUID)
 implicit val loginEncoder: Encoder[SuccessfulLogin] = semiauto.deriveEncoder[SuccessfulLogin]
@@ -43,6 +37,4 @@ object GatewayServices:
           case Success(uuid) => Ok(SuccessfulLogin(uuid))
           case Failure(e) => IO.pure(Response[IO](Status.Unauthorized).withEntity(e.getMessage()))
       } yield resp
-    case GET -> Root / "api" / "hello" =>
-      Ok(Hello("hello world"))
     }.orNotFound
