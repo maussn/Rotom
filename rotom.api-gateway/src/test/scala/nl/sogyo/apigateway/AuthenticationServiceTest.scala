@@ -54,7 +54,7 @@ class AuthenticationServiceTest extends CatsEffectSuite {
 
   // implicit val loginDecoder: Decoder[UUID] = semiauto.deriveDecoder[UUID]
   // implicit def loginEntityDecoder[F[_]]: EntityDecoder[F, UUID] = jsonOf[F, UUID]
-  implicit val loginDecoder: EntityDecoder[IO, SuccesfulLogin] = jsonOf[IO, SuccesfulLogin]
+  implicit val loginDecoder: EntityDecoder[IO, SuccessfulLogin] = jsonOf[IO, SuccessfulLogin]
 
   def createAccountsTable(db: AccountsDatabase) =
     val createActionString = db.table.schema.createStatements.mkString
@@ -74,7 +74,7 @@ class AuthenticationServiceTest extends CatsEffectSuite {
     val response = service().run(loginRequest)
     for {
       _ <- assertIO(response.map(_.status.code), 200)
-      body  <- response.flatMap(_.as[SuccesfulLogin])
+      body  <- response.flatMap(_.as[SuccessfulLogin])
       _ <- IO(assert(body.uuid == correctUuid))
     } yield ()
   }

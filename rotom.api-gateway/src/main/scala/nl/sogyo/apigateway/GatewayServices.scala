@@ -25,9 +25,9 @@ implicit val helloEncoder: Encoder[Hello] = semiauto.deriveEncoder[Hello]
 implicit def helloEntityEncoder[F[_]]: EntityEncoder[F, Hello] = jsonEncoderOf[F, Hello]
 
 
-case class SuccesfulLogin(uuid: UUID)
-implicit val loginEncoder: Encoder[SuccesfulLogin] = semiauto.deriveEncoder[SuccesfulLogin]
-implicit def loginEntityEncoder[F[_]]: EntityEncoder[F, SuccesfulLogin] = jsonEncoderOf[F, SuccesfulLogin]
+case class SuccessfulLogin(uuid: UUID)
+implicit val loginEncoder: Encoder[SuccessfulLogin] = semiauto.deriveEncoder[SuccessfulLogin]
+implicit def loginEntityEncoder[F[_]]: EntityEncoder[F, SuccessfulLogin] = jsonEncoderOf[F, SuccessfulLogin]
 
 object GatewayServices:
 
@@ -40,7 +40,7 @@ object GatewayServices:
         test = println(s"${user.username}\t${user.password}")
         auth = Try(authenticate(user, databaseProvider.accountsDatabase))
         resp <- auth match
-          case Success(uuid) => Ok(SuccesfulLogin(uuid))
+          case Success(uuid) => Ok(SuccessfulLogin(uuid))
           case Failure(e) => IO.pure(Response[IO](Status.Unauthorized).withEntity(e.getMessage()))
       } yield resp
     case GET -> Root / "api" / "hello" =>
