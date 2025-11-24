@@ -18,6 +18,7 @@ node -v # Should print "v24.11.1".
 # Verify npm version:
 npm -v # Should print "11.6.2".
 
-cd ../../rotom.client
+# Install project dependencies
+(cd ../../rotom.client
 npm install
-cd ../rotom.bash/setup
+cd ../rotom.bash/setup)
