@@ -10,3 +10,6 @@ Nothing to install yet.
 - Kafka
 
 ### Frontend
+- Vite
+- React
+- Typescript
