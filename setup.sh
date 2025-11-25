@@ -13,3 +13,6 @@ if ! command -v sdk >/dev/null 2>&1
 then (./rotom.bash/setup/install-scala.sh)
 fi
 
+if ! [ -d kafka*/bin ]
+then (./rotom.bash/setup/install-kafka.sh)
+fi
