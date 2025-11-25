@@ -1,7 +1,7 @@
 val Http4sVersion = "0.23.30"
 val CirceVersion = "0.14.14"
 val MunitVersion = "1.1.1"
-val LogbackVersion = "1.5.18"
+val LogbackVersion = "1.5.20"
 val MunitCatsEffectVersion = "2.1.0"
 
 val SlickMySQLVersion = "8.0.33"
@@ -16,7 +16,10 @@ lazy val commonSettings = Seq(
   assembly / assemblyMergeStrategy := {
     case "module-info.class" => MergeStrategy.discard
     case x => (assembly / assemblyMergeStrategy).value.apply(x)
-  }
+  },
+  libraryDependencies ++= Seq(
+    "ch.qos.logback"      %   "logback-classic"     % LogbackVersion          % Runtime,
+  ),
 )
 
 // Define the core project
@@ -36,7 +39,6 @@ lazy val apiGateway = (project in file("rotom.api-gateway"))
       "io.circe"        %% "circe-literal"        % CirceVersion,
       "org.scalameta"   %% "munit"                % MunitVersion           % Test,
       "org.typelevel"   %% "munit-cats-effect"    % MunitCatsEffectVersion % Test,
-      "ch.qos.logback"  %  "logback-classic"      % LogbackVersion         % Runtime,
     )
   )
 
@@ -50,7 +52,6 @@ lazy val peristence = (project in file("rotom.persistence"))
       "com.h2database"      %   "h2"                  % H2Version,
       "org.scalameta"       %%  "munit"               % MunitVersion            % Test,
       "org.typelevel"       %%  "munit-cats-effect"   % MunitCatsEffectVersion  % Test,
-      "ch.qos.logback"      %   "logback-classic"     % LogbackVersion          % Runtime,
     )
   )
 
