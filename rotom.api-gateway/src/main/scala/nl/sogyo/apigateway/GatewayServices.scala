@@ -28,10 +28,8 @@ object GatewayServices:
   def getServices(databaseProvider: DatabaseProvider): Kleisli[IO, Request[IO], Response[IO]] =
     HttpRoutes.of[IO] {
     case req @ POST -> Root / "api" / "login" =>
-      println(req)
       for {
         user <- req.as[UserLogin]
-        test = println(s"${user.username}\t${user.password}")
         auth = Try(authenticate(user, databaseProvider.accountsDatabase))
         resp <- auth match
           case Success(uuid) => Ok(SuccessfulLogin(uuid))
