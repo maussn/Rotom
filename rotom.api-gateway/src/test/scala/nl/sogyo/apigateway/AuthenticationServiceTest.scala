@@ -24,7 +24,7 @@ class AuthenticationServiceTest extends CatsEffectSuite {
   //Setup
   override def munitIOTimeout: Duration =
     if (isDebugging) Duration.Inf
-    else munitIOTimeout
+    else 30.seconds
 
   private def isDebugging: Boolean =
     java.lang.management.ManagementFactory
@@ -54,8 +54,6 @@ class AuthenticationServiceTest extends CatsEffectSuite {
   implicit val loginDecoder: EntityDecoder[IO, SuccessfulLogin] = jsonOf[IO, SuccessfulLogin]
 
   def createAccountsTable(db: AccountsDatabase) =
-    val createActionString = db.table.schema.createStatements.mkString
-    println(createActionString)
     val createAction = db.table.schema.create
     db.exec(createAction)
     
