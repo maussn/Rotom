@@ -21,6 +21,8 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "ch.qos.logback"        %   "logback-classic"     % LogbackVersion          % Runtime,
     "org.fusesource.jansi"  %   "jansi"               % JansiVersion            % Runtime,
+    "org.scalameta"       %%  "munit"               % MunitVersion            % Test,
+    "org.typelevel"       %%  "munit-cats-effect"   % MunitCatsEffectVersion  % Test,
   ),
 )
 
@@ -39,8 +41,6 @@ lazy val apiGateway = (project in file("rotom.api-gateway"))
       "io.circe"        %% "circe-core"           % CirceVersion,
       "io.circe"        %% "circe-generic"        % CirceVersion,
       "io.circe"        %% "circe-literal"        % CirceVersion,
-      "org.scalameta"   %% "munit"                % MunitVersion           % Test,
-      "org.typelevel"   %% "munit-cats-effect"    % MunitCatsEffectVersion % Test,
     )
   )
 
@@ -52,8 +52,6 @@ lazy val peristence = (project in file("rotom.persistence"))
       "com.typesafe.slick"  %%  "slick"               % SlickTypesafeVersion,
       "com.mysql"           %   "mysql-connector-j"   % SlickMySQLVersion,
       "com.h2database"      %   "h2"                  % H2Version,
-      "org.scalameta"       %%  "munit"               % MunitVersion            % Test,
-      "org.typelevel"       %%  "munit-cats-effect"   % MunitCatsEffectVersion  % Test,
     )
   )
 
