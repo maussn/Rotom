@@ -3,6 +3,7 @@ val CirceVersion = "0.14.14"
 val MunitVersion = "1.1.1"
 val LogbackVersion = "1.5.20"
 val MunitCatsEffectVersion = "2.1.0"
+val JansiVersion = "2.4.0"
 
 val SlickMySQLVersion = "8.0.33"
 val SlickTypesafeVersion = "3.6.1"
@@ -18,7 +19,8 @@ lazy val commonSettings = Seq(
     case x => (assembly / assemblyMergeStrategy).value.apply(x)
   },
   libraryDependencies ++= Seq(
-    "ch.qos.logback"      %   "logback-classic"     % LogbackVersion          % Runtime,
+    "ch.qos.logback"        %   "logback-classic"     % LogbackVersion          % Runtime,
+    "org.fusesource.jansi"  %   "jansi"               % JansiVersion            % Runtime,
   ),
 )
 
