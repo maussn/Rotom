@@ -1,13 +1,7 @@
-val Http4sVersion = "0.23.30"
-val CirceVersion = "0.14.14"
 val MunitVersion = "1.1.1"
-val LogbackVersion = "1.5.20"
 val MunitCatsEffectVersion = "2.1.0"
+val LogbackVersion = "1.5.20"
 val JansiVersion = "2.4.0"
-
-val SlickMySQLVersion = "8.0.33"
-val SlickTypesafeVersion = "3.6.1"
-val H2Version = "2.4.240"
 
 // Common settings for all subprojects
 lazy val commonSettings = Seq(
@@ -25,6 +19,9 @@ lazy val commonSettings = Seq(
     "org.typelevel"       %%  "munit-cats-effect"   % MunitCatsEffectVersion  % Test,
   ),
 )
+
+val Http4sVersion = "0.23.30"
+val CirceVersion = "0.14.14"
 
 // Define the core project
 lazy val apiGateway = (project in file("rotom.api-gateway"))
@@ -44,6 +41,11 @@ lazy val apiGateway = (project in file("rotom.api-gateway"))
     )
   )
 
+
+val SlickMySQLVersion = "8.0.33"
+val SlickTypesafeVersion = "3.6.1"
+val H2Version = "2.4.240"
+
 lazy val peristence = (project in file("rotom.persistence"))
   .settings(
     commonSettings,
@@ -55,16 +57,25 @@ lazy val peristence = (project in file("rotom.persistence"))
     )
   )
 
-// Define the app project, which depends on core
-// lazy val AccountWriter = (project in file("account-writer"))
-//     .settings(
-//         commonSettings,
-//         name := "account-writer"
-//     )
+val KafkaClientsVersion = "4.1.1"
+val AvroCoreVersion = "5.0.14"
+val KafkaAvroSerializerVersion = "6.0.0"
+
+lazy val kafka = (project in file("rotom.kafka"))
+  .settings(
+    commonSettings,
+    name := "kafka",
+    libraryDependencies ++= Seq(
+      "org.apache.kafka" % "kafka-clients" % KafkaClientsVersion,
+      "com.sksamuel.avro4s" %% "avro4s-core" % AvroCoreVersion,
+      // "io.confluent" % "kafka-avro-serializer" % KafkaAvroSerializerVersion,
+    )
+  )
+
 
 lazy val root = (project in file("."))
-  .aggregate(apiGateway, peristence)
-  .dependsOn(apiGateway, peristence)
+  .aggregate(apiGateway, peristence, kafka)
+  .dependsOn(apiGateway, peristence, kafka)
   .settings(
     name := "item-lending-library",
     commonSettings,
