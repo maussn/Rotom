@@ -12,6 +12,7 @@ CREATE TABLE rotom.items (
   owner_id BINARY(16) NOT NULL,
   item_name VARCHAR(255) NOT NULL,
   item_description TEXT,
+  is_active BOOLEAN DEFAULT 1 NOT NULL
   INDEX owner_index (owner_id),
   FOREIGN KEY (owner_id) REFERENCES rotom.accounts(user_id) ON DELETE CASCADE
 );

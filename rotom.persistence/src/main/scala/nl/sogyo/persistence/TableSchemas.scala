@@ -16,7 +16,8 @@ case class Item(
   id: UUID,
   owner: UUID,
   name: String,
-  description: Option[String]
+  description: Option[String],
+  active: Boolean
 )
 
 case class Loan(
@@ -46,8 +47,9 @@ trait Tables { this: ProfileProvider =>
     def owner = column[UUID]("owner_id")
     def name = column[String]("item_name")
     def description = column[Option[String]]("item_description")
+    def active = column[Boolean]("is_active")
     def ownerFk = foreignKey("fk_items_owner", owner, accounts)(_.id, onDelete = ForeignKeyAction.Cascade)
-    def * = (id, owner, name, description).mapTo[Item]
+    def * = (id, owner, name, description, active).mapTo[Item]
   }
 
   val items = TableQuery[ItemsTable]
