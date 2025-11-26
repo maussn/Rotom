@@ -23,11 +23,13 @@ case class SuccessfulLogin(userId: UUID)
 implicit val loginEncoder: Encoder[SuccessfulLogin] = semiauto.deriveEncoder[SuccessfulLogin]
 implicit def loginEntityEncoder[F[_]]: EntityEncoder[F, SuccessfulLogin] = jsonEncoderOf[F, SuccessfulLogin]
 
+val Api = Root / "api"
+
 object GatewayServices:
 
   def getServices(databaseProvider: DatabaseProvider): Kleisli[IO, Request[IO], Response[IO]] =
     HttpRoutes.of[IO] {
-    case req @ POST -> Root / "api" / "login" =>
+    case req @ POST -> Api / "login" =>
       for {
         user <- req.as[UserLogin]
         auth = Try(authenticate(user, databaseProvider.accountsDatabase))
