@@ -59,16 +59,17 @@ lazy val peristence = (project in file("rotom.persistence"))
 
 val KafkaClientsVersion = "4.1.1"
 val AvroCoreVersion = "5.0.14"
-val KafkaAvroSerializerVersion = "6.0.0"
+val KafkaAvroSerializerVersion = "8.1.0"
 
 lazy val kafka = (project in file("rotom.kafka"))
   .settings(
     commonSettings,
     name := "kafka",
+    resolvers += "Confluent Maven Repository" at "https://packages.confluent.io/maven/",
     libraryDependencies ++= Seq(
       "org.apache.kafka" % "kafka-clients" % KafkaClientsVersion,
       "com.sksamuel.avro4s" %% "avro4s-core" % AvroCoreVersion,
-      // "io.confluent" % "kafka-avro-serializer" % KafkaAvroSerializerVersion,
+      "io.confluent" % "kafka-avro-serializer" % KafkaAvroSerializerVersion,
     )
   )
 
