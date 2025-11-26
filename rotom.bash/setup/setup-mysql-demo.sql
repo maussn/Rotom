@@ -16,6 +16,14 @@ INSERT INTO rotom.items (owner_id, item_name)
   SELECT user_id, "Screwdriver"
   FROM rotom.accounts
   WHERE username = "piet";
+INSERT INTO rotom.items (owner_id, item_name)
+  SELECT user_id, "Landmower"
+  FROM rotom.accounts
+  WHERE username = "piet";
+INSERT INTO rotom.items (owner_id, item_name)
+  SELECT user_id, "Vacuum"
+  FROM rotom.accounts
+  WHERE username = "piet";
 
 
 INSERT INTO rotom.loans (item_id, borrower_id, loan_start, loan_end)
@@ -25,6 +33,8 @@ VALUES (
   NOW(),
   DATE_ADD(NOW(), INTERVAL 14 DAY)
 );
+
+UPDATE rotom.items SET is_active = 0 WHERE item_name = "Drill";
 
 INSERT INTO rotom.loans (item_id, borrower_id, loan_start, loan_end)
 VALUES (
