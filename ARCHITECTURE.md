@@ -31,21 +31,25 @@ erDiagram
   
   ACCOUNTS {
     uuid user_id PK
-    string username
-    string password
+    varchar username
+    varchar password
+    boolean is_active
   }
 
   ITEMS {
     uuid item_id PK
-    string name
-    uuid owner_id FK
-    uuid loan_id FK "can be null"
+    uuid owner_id FK "on delete cascade"
+    varchar item_name
+    text item_description
   }
 
   LOANS {
     uuid loan_id PK
-    uuid item_id FK
-    uuid borrower_id FK
+    uuid item_id FK "on delete restrict"
+    uuid borrower_id FK "on delete restrict"
+    datetime loan_start
+    datetime loan_end
+    datetime loan_returned
   }
 
   ACCOUNTS ||--o{ ITEMS : "has items"
