@@ -59,7 +59,7 @@ class AuthenticationServiceTest extends CatsEffectSuite {
     
 
   def insertTestAccount(db: AccountsDatabase) = 
-    val insertAction = (db.table += Account(correctUuid, correctUsername, correctPassword)).map(_ => ())
+    val insertAction = (db.table += Account(correctUuid, correctUsername, correctPassword, true)).map(_ => ())
     db.exec(insertAction)
   
   // Tests
