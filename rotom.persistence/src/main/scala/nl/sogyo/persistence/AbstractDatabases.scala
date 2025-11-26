@@ -1,7 +1,8 @@
 package nl.sogyo.persistence
 
-import slick.lifted.TableQuery
 import slick.dbio.DBIO
+import slick.lifted.TableQuery
+
 import scala.concurrent.Await
 import scala.concurrent.duration.*
 
@@ -28,6 +29,16 @@ trait AccountsDatabase extends Database with Tables {
     exec(setupQuery(username).result).headOption
 }
 
+trait ItemsDatabase extends Database with Tables {
+  val table: TableQuery[ItemsTable]
+}
+
+trait LoansDatabase extends Database with Tables {
+  val table: TableQuery[LoansTable]
+}
+
 trait DatabaseProvider {
   val accountsDatabase: AccountsDatabase
+  val itemsDatabase: ItemsDatabase
+  val loansDatabase: LoansDatabase
 }
