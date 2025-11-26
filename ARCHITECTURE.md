@@ -52,7 +52,7 @@ erDiagram
     datetime loan_returned
   }
 
-  ACCOUNTS ||--o{ ITEMS : "has items"
+  ACCOUNTS ||--o{ ITEMS : "is owned by"
   ITEMS }|--o{ LOANS : "is loaned"
   LOANS }o--|| ACCOUNTS : "is loaned by"
 
