@@ -70,7 +70,7 @@ class AuthenticationServiceTest extends CatsEffectSuite {
     for {
       _ <- assertIO(response.map(_.status.code), 200)
       body  <- response.flatMap(_.as[SuccessfulLogin])
-      _ <- IO(assert(body.uuid == correctUuid))
+      _ <- IO(assert(body.userId == correctUuid))
     } yield ()
   }
 

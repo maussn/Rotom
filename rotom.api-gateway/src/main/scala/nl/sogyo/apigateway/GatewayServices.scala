@@ -19,7 +19,7 @@ import java.util.UUID
 case class UserLogin(username: String, password: String)
 implicit val decoder: EntityDecoder[IO, UserLogin] = jsonOf[IO, UserLogin]
 
-case class SuccessfulLogin(uuid: UUID)
+case class SuccessfulLogin(userId: UUID)
 implicit val loginEncoder: Encoder[SuccessfulLogin] = semiauto.deriveEncoder[SuccessfulLogin]
 implicit def loginEntityEncoder[F[_]]: EntityEncoder[F, SuccessfulLogin] = jsonEncoderOf[F, SuccessfulLogin]
 
@@ -32,7 +32,7 @@ object GatewayServices:
         user <- req.as[UserLogin]
         auth = Try(authenticate(user, databaseProvider.accountsDatabase))
         resp <- auth match
-          case Success(uuid) => Ok(SuccessfulLogin(uuid))
+          case Success(userId) => Ok(SuccessfulLogin(userId))
           case Failure(e) => IO.pure(Response[IO](Status.Unauthorized).withEntity(e.getMessage()))
       } yield resp
     }.orNotFound

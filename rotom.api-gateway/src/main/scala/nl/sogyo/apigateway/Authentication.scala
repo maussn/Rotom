@@ -11,7 +11,7 @@ object Authentication {
     
   private def checkPassword(account: Account, userLogin: UserLogin): UUID =
     if isCorrectPassword(account.password, userLogin.password)
-    then account.uuid
+    then account.id
     else throw IncorrectLoginException("Incorrect password.")
 
   def authenticate(userLogin: UserLogin, database: AccountsDatabase): UUID =
