@@ -16,7 +16,7 @@ case class Item(
   id: UUID,
   owner: UUID,
   name: String,
-  description: String
+  description: Option[String]
 )
 
 case class Loan(
@@ -25,7 +25,7 @@ case class Loan(
   borrower: UUID,
   dateStart: LocalDateTime,
   dateEnd: LocalDateTime,
-  dateReturned: LocalDateTime
+  dateReturned: Option[LocalDateTime]
 )
 
 trait Tables { this: ProfileProvider =>
@@ -45,7 +45,7 @@ trait Tables { this: ProfileProvider =>
     def id = column[UUID]("item_id", O.PrimaryKey)
     def owner = column[UUID]("owner_id")
     def name = column[String]("item_name")
-    def description = column[String]("item_description")
+    def description = column[Option[String]]("item_description")
     def ownerFk = foreignKey("fk_items_owner", owner, accounts)(_.id, onDelete = ForeignKeyAction.Cascade)
     def * = (id, owner, name, description).mapTo[Item]
   }
@@ -58,7 +58,7 @@ trait Tables { this: ProfileProvider =>
     def borrower = column[UUID]("borrower_id")
     def dateStart = column[LocalDateTime]("loan_start")
     def dateEnd = column[LocalDateTime]("loan_end")
-    def dateReturned = column[LocalDateTime]("loan_returned")
+    def dateReturned = column[Option[LocalDateTime]]("loan_returned")
     def itemFk = foreignKey("fk_loans_item", item, items)(_.id, onDelete = ForeignKeyAction.Restrict)
     def borrowerFk = foreignKey("fk_loans_borrower", borrower, accounts)(_.id, onDelete = ForeignKeyAction.Restrict)
     def * = (id, item, borrower, dateStart, dateEnd, dateReturned).mapTo[Loan]
