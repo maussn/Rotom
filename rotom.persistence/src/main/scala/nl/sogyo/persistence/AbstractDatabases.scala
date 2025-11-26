@@ -22,15 +22,25 @@ trait AccountsDatabase extends Database with Tables {
   import profile.api.*
   val table: TableQuery[AccountsTable]
 
-  private def setupQuery(username: String) = 
-    table.filter(_.username === username)
-
   def queryAccountsByUsername(username: String): Option[Account] = 
+    def setupQuery(username: String) = 
+      table.filter(_.username === username)
     exec(setupQuery(username).result).headOption
 }
 
 trait ItemsDatabase extends Database with Tables {
+  import profile.api.*
   val table: TableQuery[ItemsTable]
+
+  def queryAllItems(): Seq[Item] =
+    def setupQuery() =
+      println(table)
+      table
+    val action = setupQuery().result
+    println(action.statements.mkString)
+    val items = exec(action)
+    println(items)
+    items
 }
 
 trait LoansDatabase extends Database with Tables {

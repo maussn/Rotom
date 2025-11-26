@@ -22,3 +22,12 @@ export async function sendLoginRequest(username: string, password: string) {
     }
   }
 }
+
+export async function getCatalogue() {
+  const resp = await fetch("/api/catalogue")
+  if (resp.ok) {
+    const body = await resp.json()
+    console.log(body)
+    return body
+  }
+}

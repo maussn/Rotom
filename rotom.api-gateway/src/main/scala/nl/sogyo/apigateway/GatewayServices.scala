@@ -10,11 +10,11 @@ import nl.sogyo.persistence.DatabaseProvider
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.io.*
-
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 import java.util.UUID
+import nl.sogyo.persistence.Item
 
 case class UserLogin(username: String, password: String)
 implicit val decoder: EntityDecoder[IO, UserLogin] = jsonOf[IO, UserLogin]
@@ -22,6 +22,10 @@ implicit val decoder: EntityDecoder[IO, UserLogin] = jsonOf[IO, UserLogin]
 case class SuccessfulLogin(userId: UUID)
 implicit val loginEncoder: Encoder[SuccessfulLogin] = semiauto.deriveEncoder[SuccessfulLogin]
 implicit def loginEntityEncoder[F[_]]: EntityEncoder[F, SuccessfulLogin] = jsonEncoderOf[F, SuccessfulLogin]
+
+case class ItemList(items: Seq[Item])
+implicit val itemListEncoder: Encoder[ItemList] = semiauto.deriveEncoder[ItemList]
+implicit def itemListEntityEncoder[F[_]]: EntityEncoder[F, ItemList] = jsonEncoderOf[F, ItemList]
 
 val Api = Root / "api"
 
@@ -37,4 +41,12 @@ object GatewayServices:
           case Success(userId) => Ok(SuccessfulLogin(userId))
           case Failure(e) => IO.pure(Response[IO](Status.Unauthorized).withEntity(e.getMessage()))
       } yield resp
+    case req @ GET -> Api / "catalogue" =>
+      println(req)
+      val items = databaseProvider.itemsDatabase.queryAllItems()
+      println(items)
+      Ok(ItemList(items))
+    // case req @ GET -> Api / "catalogue" / userId => 
+    //   val items = databaseProvider.itemsDatabase.queryItemsByUserId(UUID.fromString(userId))
+    //   Ok(ItemList(items))
     }.orNotFound
