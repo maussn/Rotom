@@ -20,8 +20,14 @@ shift $((OPTIND - 1))
 MYSQL_ROOT_USERNAME="root"
 MYSQL_ROOT_PASSWORD="root"
 
-export ROTOM_ACCOUNTS_USERNAME="rotom-accounts"
-export ROTOM_ACCOUNTS_PASSWORD="password"
+export ROTOM_READER_ACCOUNTS_USERNAME="reader-accounts"
+export ROTOM_READER_ACCOUNTS_PASSWORD="password"
+
+export ROTOM_READER_ITEMS_USERNAME="reader-items"
+export ROTOM_READER_ITEMS_PASSWORD="password"
+
+export ROTOM_READER_LOANS_USERNAME="reader-loans"
+export ROTOM_READER_LOANS_PASSWORD="password"
 
 envsubst < setup-mysql-databases.sql | mysql -u "$MYSQL_ROOT_USERNAME" "-p$MYSQL_ROOT_PASSWORD"
 
