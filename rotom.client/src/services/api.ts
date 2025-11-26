@@ -1,13 +1,4 @@
 
-
-export async function fetchHelloWorld() {
-    const resp = await fetch("/api/hello")
-    console.log(resp)
-    const text = await resp.json()
-    console.log(text)
-    return text.message
-}
-
 export async function sendLoginRequest(username: string, password: string) {
   const resp = await fetch("/api/login", {
     method: "POST",
