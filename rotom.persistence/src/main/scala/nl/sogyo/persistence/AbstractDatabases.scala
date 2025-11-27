@@ -19,23 +19,11 @@ trait Database extends ProfileProvider with Tables {
 }
 
 trait AccountsDatabase extends Database with Tables {
-  import profile.api.*
   val table: TableQuery[AccountsTable]
-
-  def queryAccountsByUsername(username: String): Option[Account] = 
-    def setupQuery(username: String) = 
-      table.filter(_.username === username)
-    exec(setupQuery(username).result).headOption
 }
 
 trait ItemsDatabase extends Database with Tables {
-  import profile.api.*
   val table: TableQuery[ItemsTable]
-
-  def queryAllItems(): Seq[Item] =
-    def setupQuery() = table
-    val action = setupQuery().result
-    exec(action)
 }
 
 trait LoansDatabase extends Database with Tables {
@@ -43,7 +31,20 @@ trait LoansDatabase extends Database with Tables {
 }
 
 trait DatabaseReader {
+  val profile: slick.jdbc.JdbcProfile
   val accountsDatabase: AccountsDatabase
   val itemsDatabase: ItemsDatabase
   val loansDatabase: LoansDatabase
+
+  import profile.api.* 
+
+  def queryAllItems(): Seq[Item] =
+    def setupQuery() =
+      itemsDatabase.table
+    itemsDatabase.exec(setupQuery().result)
+
+  def queryAccountsByUsername(username: String): Option[Account] =
+    def setupQuery(username: String) = 
+      accountsDatabase.table.filter(_.username === username)
+    accountsDatabase.exec(setupQuery(username).result).headOption
 }

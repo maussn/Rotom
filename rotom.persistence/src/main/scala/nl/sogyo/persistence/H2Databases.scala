@@ -21,6 +21,7 @@ object H2LoansDatabase extends LoansDatabase with Tables {
 }
 
 object H2DatabaseReader extends DatabaseReader {
+  override val profile = slick.jdbc.H2Profile
   override val accountsDatabase = H2AccountsDatabase
   override val itemsDatabase = H2ItemsDatabase
   override val loansDatabase = H2LoansDatabase

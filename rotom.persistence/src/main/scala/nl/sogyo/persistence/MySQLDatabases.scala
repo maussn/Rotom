@@ -23,6 +23,7 @@ object MySQLLoansDatabase extends LoansDatabase with Tables {
 }
 
 object MySQLDatabaseReader extends DatabaseReader {
+  override val profile = slick.jdbc.MySQLProfile
   override val accountsDatabase = MySQLAccountsDatabase
   override val itemsDatabase = MySQLItemsDatabase
   override val loansDatabase = MySQLLoansDatabase

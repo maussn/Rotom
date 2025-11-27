@@ -35,15 +35,15 @@ class AuthenticationServiceTest extends CatsEffectSuite {
 
   val service = new Fixture[Kleisli[IO, Request[IO], Response[IO]]]("service") {
     var service: Kleisli[IO, Request[IO], Response[IO]] = null
-    val dbProvider = H2DatabaseReader
+    val dbReader = H2DatabaseReader
     override def apply(): Kleisli[IO, Request[IO], Response[IO]] = service
     override def beforeEach(context: BeforeEach): Unit = 
-      createAccountsTable(dbProvider.accountsDatabase)
-      insertTestAccount(dbProvider.accountsDatabase)
-      service = getServices(dbProvider)
+      createAccountsTable(dbReader.accountsDatabase)
+      insertTestAccount(dbReader.accountsDatabase)
+      service = getServices(dbReader)
     override def afterEach(context: AfterEach): Unit = 
       val resetDatabaseQuery = sqlu"""DROP ALL OBJECTS"""
-      dbProvider.accountsDatabase.exec(resetDatabaseQuery): Unit
+      dbReader.accountsDatabase.exec(resetDatabaseQuery): Unit
   }
   override def munitFixtures = List(service)
 

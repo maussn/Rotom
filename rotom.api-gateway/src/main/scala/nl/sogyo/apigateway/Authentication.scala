@@ -1,7 +1,6 @@
 package nl.sogyo.apigateway
 
 import nl.sogyo.persistence.Account
-import nl.sogyo.persistence.AccountsDatabase
 import java.util.UUID
 
 object Authentication {
@@ -14,8 +13,7 @@ object Authentication {
     then account.id
     else throw IncorrectLoginException("Incorrect password.")
 
-  def authenticate(userLogin: UserLogin, database: AccountsDatabase): UUID =
-    val accountOption = database.queryAccountsByUsername(userLogin.username)
+  def authenticate(userLogin: UserLogin, accountOption: Option[Account]): UUID =
     accountOption match
       case Some(account) => checkPassword(account, userLogin)
       case None => throw IncorrectLoginException("Incorrect username.")

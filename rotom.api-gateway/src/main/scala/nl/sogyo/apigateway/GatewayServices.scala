@@ -31,18 +31,19 @@ val Api = Root / "api"
 
 object GatewayServices:
 
-  def getServices(databaseProvider: DatabaseReader): Kleisli[IO, Request[IO], Response[IO]] =
+  def getServices(databaseReader: DatabaseReader): Kleisli[IO, Request[IO], Response[IO]] =
     HttpRoutes.of[IO] {
     case req @ POST -> Api / "login" =>
       for {
         user <- req.as[UserLogin]
-        auth = Try(authenticate(user, databaseProvider.accountsDatabase))
+        account = databaseReader.queryAccountsByUsername(user.username)
+        auth = Try(authenticate(user, account))
         resp <- auth match
           case Success(userId) => Ok(SuccessfulLogin(userId))
           case Failure(e) => IO.pure(Response[IO](Status.Unauthorized).withEntity(e.getMessage()))
       } yield resp
     case req @ GET -> Api / "catalogue" =>
-      val items = databaseProvider.itemsDatabase.queryAllItems()
+      val items = databaseReader.queryAllItems()
       Ok(ItemList(items))
     // case req @ GET -> Api / "catalogue" / userId => 
     //   val items = databaseProvider.itemsDatabase.queryItemsByUserId(UUID.fromString(userId))
