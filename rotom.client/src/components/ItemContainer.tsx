@@ -7,7 +7,10 @@ type Props = {
 export default function ItemContainer({ item }: Props) {
     return (
     <article className="item-container">
-      <h2 className="item-title">{item.name}</h2>
+      <div className="item-header">
+        <h2 className="item-title">{item.name}</h2>
+        <button>Loan</button>
+      </div>
       <p className="item-desc">{item.description ?? "No description"}</p>
     </article>
   )
