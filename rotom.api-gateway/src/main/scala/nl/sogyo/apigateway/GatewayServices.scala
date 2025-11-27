@@ -6,7 +6,6 @@ import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.generic.semiauto
 import nl.sogyo.apigateway.Authentication.authenticate
-import nl.sogyo.persistence.DatabaseProvider
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.io.*
@@ -15,6 +14,7 @@ import scala.util.Success
 import scala.util.Try
 import java.util.UUID
 import nl.sogyo.persistence.Item
+import nl.sogyo.persistence.DatabaseReader
 
 case class UserLogin(username: String, password: String)
 implicit val decoder: EntityDecoder[IO, UserLogin] = jsonOf[IO, UserLogin]
@@ -31,7 +31,7 @@ val Api = Root / "api"
 
 object GatewayServices:
 
-  def getServices(databaseProvider: DatabaseProvider): Kleisli[IO, Request[IO], Response[IO]] =
+  def getServices(databaseProvider: DatabaseReader): Kleisli[IO, Request[IO], Response[IO]] =
     HttpRoutes.of[IO] {
     case req @ POST -> Api / "login" =>
       for {

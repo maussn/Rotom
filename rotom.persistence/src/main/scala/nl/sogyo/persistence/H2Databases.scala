@@ -20,7 +20,7 @@ object H2LoansDatabase extends LoansDatabase with Tables {
   override val db = profile.api.Database.forConfig("H2-test")
 }
 
-object H2DatabaseProvider extends DatabaseProvider {
+object H2DatabaseReader extends DatabaseReader {
   override val accountsDatabase = H2AccountsDatabase
   override val itemsDatabase = H2ItemsDatabase
   override val loansDatabase = H2LoansDatabase

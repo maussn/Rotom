@@ -22,7 +22,7 @@ object MySQLLoansDatabase extends LoansDatabase with Tables {
   override val db = profile.api.Database.forConfig("rotom-root")
 }
 
-object MySQLDatabaseProvider extends DatabaseProvider {
+object MySQLDatabaseReader extends DatabaseReader {
   override val accountsDatabase = MySQLAccountsDatabase
   override val itemsDatabase = MySQLItemsDatabase
   override val loansDatabase = MySQLLoansDatabase

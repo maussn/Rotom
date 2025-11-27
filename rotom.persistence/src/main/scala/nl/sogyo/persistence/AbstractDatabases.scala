@@ -47,7 +47,7 @@ trait LoansDatabase extends Database with Tables {
   val table: TableQuery[LoansTable]
 }
 
-trait DatabaseProvider {
+trait DatabaseReader {
   val accountsDatabase: AccountsDatabase
   val itemsDatabase: ItemsDatabase
   val loansDatabase: LoansDatabase

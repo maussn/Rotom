@@ -9,7 +9,7 @@ import munit.CatsEffectSuite
 import nl.sogyo.apigateway.GatewayServices.getServices
 import nl.sogyo.persistence.Account
 import nl.sogyo.persistence.AccountsDatabase
-import nl.sogyo.persistence.H2DatabaseProvider
+import nl.sogyo.persistence.H2DatabaseReader
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.implicits.*
@@ -35,7 +35,7 @@ class AuthenticationServiceTest extends CatsEffectSuite {
 
   val service = new Fixture[Kleisli[IO, Request[IO], Response[IO]]]("service") {
     var service: Kleisli[IO, Request[IO], Response[IO]] = null
-    val dbProvider = H2DatabaseProvider
+    val dbProvider = H2DatabaseReader
     override def apply(): Kleisli[IO, Request[IO], Response[IO]] = service
     override def beforeEach(context: BeforeEach): Unit = 
       createAccountsTable(dbProvider.accountsDatabase)
