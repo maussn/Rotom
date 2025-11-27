@@ -8,9 +8,11 @@ console.log(fetchedItems)
 const items = castToItems(fetchedItems.items)
 
 export const Catalogue = () => {
-  return <div className="center-screen">
-    <div className="box">
+  return <div>
+    <div className="center-screen">
       <ItemScrollList items={items} />
     </div>
   </div>
+  
+
 }

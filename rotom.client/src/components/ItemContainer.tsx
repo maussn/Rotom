@@ -6,9 +6,9 @@ type Props = {
 
 export default function ItemContainer({ item }: Props) {
     return (
-    <div>
+    <article className="item-container">
       <h2 className="item-title">{item.name}</h2>
       <p className="item-desc">{item.description ?? "No description"}</p>
-    </div>
+    </article>
   )
 }
