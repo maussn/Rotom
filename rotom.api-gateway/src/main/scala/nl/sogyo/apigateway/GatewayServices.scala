@@ -42,9 +42,7 @@ object GatewayServices:
           case Failure(e) => IO.pure(Response[IO](Status.Unauthorized).withEntity(e.getMessage()))
       } yield resp
     case req @ GET -> Api / "catalogue" =>
-      println(req)
       val items = databaseProvider.itemsDatabase.queryAllItems()
-      println(items)
       Ok(ItemList(items))
     // case req @ GET -> Api / "catalogue" / userId => 
     //   val items = databaseProvider.itemsDatabase.queryItemsByUserId(UUID.fromString(userId))
