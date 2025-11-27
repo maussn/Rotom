@@ -33,14 +33,9 @@ trait ItemsDatabase extends Database with Tables {
   val table: TableQuery[ItemsTable]
 
   def queryAllItems(): Seq[Item] =
-    def setupQuery() =
-      println(table)
-      table
+    def setupQuery() = table
     val action = setupQuery().result
-    println(action.statements.mkString)
-    val items = exec(action)
-    println(items)
-    items
+    exec(action)
 }
 
 trait LoansDatabase extends Database with Tables {
