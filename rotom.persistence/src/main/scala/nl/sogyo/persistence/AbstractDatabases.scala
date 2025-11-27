@@ -43,7 +43,7 @@ trait DatabaseReader {
       itemsDatabase.table
     itemsDatabase.exec(setupQuery().result)
 
-  def queryAccountsByUsername(username: String): Option[Account] =
+  def queryAccountByUsername(username: String): Option[Account] =
     def setupQuery(username: String) = 
       accountsDatabase.table.filter(_.username === username)
     accountsDatabase.exec(setupQuery(username).result).headOption

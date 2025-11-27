@@ -36,7 +36,7 @@ object GatewayServices:
     case req @ POST -> Api / "login" =>
       for {
         user <- req.as[UserLogin]
-        account = databaseReader.queryAccountsByUsername(user.username)
+        account = databaseReader.queryAccountByUsername(user.username)
         auth = Try(authenticate(user, account))
         resp <- auth match
           case Success(userId) => Ok(SuccessfulLogin(userId))
