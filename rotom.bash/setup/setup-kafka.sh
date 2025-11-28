@@ -4,7 +4,7 @@
 rm -rf /tmp/kafka-logs /tmp/kraft-combined-logs
 
 (
-  cd kafka_2.13-4.1.1
+  cd kafka_* || exit
   # Generate cluster UUID
   export KAFKA_CLUSTER_ID="rotom-cluster"
   # Format log directories
