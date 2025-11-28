@@ -6,7 +6,7 @@
 
 (
   # Move to kafka directory
-  cd kafka_*
+  cd kafka_* || exit
 
   # Start the Kafka server
   bin/kafka-server-start.sh config/server.properties
