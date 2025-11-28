@@ -1,6 +1,6 @@
 package nl.sogyo.apigateway
 
-import nl.sogyo.persistence.Account
+import nl.sogyo.persistence.*
 import java.util.UUID
 
 object Authentication {

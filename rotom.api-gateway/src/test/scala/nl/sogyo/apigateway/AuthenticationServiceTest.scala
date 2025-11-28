@@ -7,9 +7,7 @@ import io.circe.literal.*
 import io.circe.generic.auto.*
 import munit.CatsEffectSuite
 import nl.sogyo.apigateway.GatewayServices.getServices
-import nl.sogyo.persistence.Account
-import nl.sogyo.persistence.AccountsDatabase
-import nl.sogyo.persistence.H2DatabaseReader
+import nl.sogyo.persistence.*
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.implicits.*

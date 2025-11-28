@@ -2,30 +2,14 @@ package nl.sogyo.apigateway
 
 import cats.data.Kleisli
 import cats.effect.*
-import io.circe.*
-import io.circe.generic.auto.*
-import io.circe.generic.semiauto
 import nl.sogyo.apigateway.Authentication.authenticate
+import nl.sogyo.persistence.*
 import org.http4s.*
-import org.http4s.circe.*
 import org.http4s.dsl.io.*
+
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-import java.util.UUID
-import nl.sogyo.persistence.Item
-import nl.sogyo.persistence.DatabaseReader
-
-case class UserLogin(username: String, password: String)
-implicit val decoder: EntityDecoder[IO, UserLogin] = jsonOf[IO, UserLogin]
-
-case class SuccessfulLogin(userId: UUID)
-implicit val loginEncoder: Encoder[SuccessfulLogin] = semiauto.deriveEncoder[SuccessfulLogin]
-implicit def loginEntityEncoder[F[_]]: EntityEncoder[F, SuccessfulLogin] = jsonEncoderOf[F, SuccessfulLogin]
-
-case class ItemList(items: Seq[Item])
-implicit val itemListEncoder: Encoder[ItemList] = semiauto.deriveEncoder[ItemList]
-implicit def itemListEntityEncoder[F[_]]: EntityEncoder[F, ItemList] = jsonEncoderOf[F, ItemList]
 
 val Api = Root / "api"
 
@@ -48,4 +32,10 @@ object GatewayServices:
     // case req @ GET -> Api / "catalogue" / userId => 
     //   val items = databaseProvider.itemsDatabase.queryItemsByUserId(UUID.fromString(userId))
     //   Ok(ItemList(items))
+    // case req @ POST -> Api / "loan" =>
+    //   for {
+    //     loan <- req.as[LoanRequest]
+    //     result = Try(processLoanRequest(loan, databaseReader))
+    //     resp <- Ok()
+    //   } yield(resp)
     }.orNotFound
