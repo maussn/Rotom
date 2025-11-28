@@ -1,9 +1,9 @@
+// Common settings for all subprojects
 val MunitVersion = "1.1.1"
 val MunitCatsEffectVersion = "2.1.0"
 val LogbackVersion = "1.5.20"
 val JansiVersion = "2.4.0"
 
-// Common settings for all subprojects
 lazy val commonSettings = Seq(
   scalaVersion := "3.7.3",
   organization := "nl.sogyo",
@@ -20,63 +20,80 @@ lazy val commonSettings = Seq(
   ),
 )
 
+// Other dependency packages
 val Http4sVersion = "0.23.30"
+
+lazy val Http4sDependencies = Seq(
+  libraryDependencies ++= Seq(
+    "org.http4s"      %% "http4s-ember-server"  % Http4sVersion,
+    "org.http4s"      %% "http4s-ember-client"  % Http4sVersion,
+    "org.http4s"      %% "http4s-circe"         % Http4sVersion,
+    "org.http4s"      %% "http4s-dsl"           % Http4sVersion,
+  )
+)
+
 val CirceVersion = "0.14.14"
 
-// Define the core project
-lazy val apiGateway = (project in file("rotom.api-gateway"))
-  .dependsOn(peristence)
-  .settings(
-    commonSettings,
-    name := "api-gateway",
-    Compile / run / mainClass := Some("nl.sogyo.apigateway.Main"),
-    libraryDependencies ++= Seq(
-      "org.http4s"      %% "http4s-ember-server"  % Http4sVersion,
-      "org.http4s"      %% "http4s-ember-client"  % Http4sVersion,
-      "org.http4s"      %% "http4s-circe"         % Http4sVersion,
-      "org.http4s"      %% "http4s-dsl"           % Http4sVersion,
-      "io.circe"        %% "circe-core"           % CirceVersion,
-      "io.circe"        %% "circe-generic"        % CirceVersion,
-      "io.circe"        %% "circe-literal"        % CirceVersion,
-    )
+lazy val CirceDependencies = Seq(
+  libraryDependencies ++= Seq(
+    "io.circe"        %% "circe-core"           % CirceVersion,
+    "io.circe"        %% "circe-generic"        % CirceVersion,
+    "io.circe"        %% "circe-literal"        % CirceVersion,
   )
-
+)
 
 val SlickMySQLVersion = "8.0.33"
 val SlickTypesafeVersion = "3.6.1"
 val H2Version = "2.4.240"
 
-lazy val peristence = (project in file("rotom.persistence"))
+lazy val SlickDependencies = Seq(
+  libraryDependencies ++= Seq(
+    "com.typesafe.slick"  %%  "slick"               % SlickTypesafeVersion,
+    "com.mysql"           %   "mysql-connector-j"   % SlickMySQLVersion,
+    "com.h2database"      %   "h2"                  % H2Version,
+  )
+)
+
+val KafkaClientsVersion = "4.1.1"
+
+lazy val KafkaDependencies = Seq(
+  libraryDependencies ++= Seq(
+    "org.apache.kafka" % "kafka-clients" % KafkaClientsVersion,
+  )
+)
+
+// Define root project and subprojects
+lazy val persistence = (project in file("rotom.persistence"))
   .settings(
     commonSettings,
     name := "persistence",
-    libraryDependencies ++= Seq(
-      "com.typesafe.slick"  %%  "slick"               % SlickTypesafeVersion,
-      "com.mysql"           %   "mysql-connector-j"   % SlickMySQLVersion,
-      "com.h2database"      %   "h2"                  % H2Version,
-    )
+    SlickDependencies,
+    CirceDependencies,
+    Http4sDependencies,
   )
 
-val KafkaClientsVersion = "4.1.1"
-val AvroCoreVersion = "5.0.14"
-val KafkaAvroSerializerVersion = "8.1.0"
+lazy val apiGateway = (project in file("rotom.api-gateway"))
+  .dependsOn(persistence, kafka)
+  .settings(
+    commonSettings,
+    name := "api-gateway",
+    Compile / run / mainClass := Some("nl.sogyo.apigateway.Main"),
+    Http4sDependencies,
+    CirceDependencies,
+  )
 
 lazy val kafka = (project in file("rotom.kafka"))
+  .dependsOn(persistence)
   .settings(
     commonSettings,
     name := "kafka",
-    resolvers += "Confluent Maven Repository" at "https://packages.confluent.io/maven/",
-    libraryDependencies ++= Seq(
-      "org.apache.kafka" % "kafka-clients" % KafkaClientsVersion,
-      "com.sksamuel.avro4s" %% "avro4s-core" % AvroCoreVersion,
-      "io.confluent" % "kafka-avro-serializer" % KafkaAvroSerializerVersion,
-    )
+    KafkaDependencies,
   )
 
 
 lazy val root = (project in file("."))
-  .aggregate(apiGateway, peristence, kafka)
-  .dependsOn(apiGateway, peristence, kafka)
+  .aggregate(apiGateway, persistence, kafka)
+  .dependsOn(apiGateway, persistence, kafka)
   .settings(
     name := "item-lending-library",
     commonSettings,
