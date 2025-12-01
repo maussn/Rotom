@@ -16,25 +16,31 @@ done
 
 shift $((OPTIND - 1))
 
-apt update
-
 if ! command -v mysql >/dev/null 2>&1; then
-  if $demo; then
-    (./rotom.bash/setup/install-mysql.sh -d)
-  else
-    (./rotom.bash/setup/install-mysql.sh )
-  fi
+  echo "BASH LOG: No MySQL detected"
+  ./rotom.bash/setup/install-mysql.sh
 fi
 
 if ! command -v npm >/dev/null 2>&1; then
-  (./rotom.bash/setup/install-nodejs.sh)
+  echo "BASH LOG: No NPM detected"
+  ./rotom.bash/setup/install-nodejs.sh
 fi
 
-if ! command -v sdk >/dev/null 2>&1; then
-  (./rotom.bash/setup/install-scala.sh)
+if ! command -v scala >/dev/null 2>&1; then
+  echo "BASH LOG: No scala detected"
+  ./rotom.bash/setup/install-scala.sh
 fi
 
 # shellcheck disable=SC2144
-if ! [ -d kafka*/bin ]; then
-  (./rotom.bash/setup/install-kafka.sh)
+if ! compgen -G "kafka*/bin" > /dev/null; then
+  echo "BASH LOG: Kafka folder not found"
+  ./rotom.bash/setup/install-kafka.sh
+fi
+
+if $demo; then
+  echo "BASH LOG: Setting up MySQL database in demo mode."
+  ./rotom.bash/setup/setup-mysql.sh -d
+else
+  echo "BASH LOG: Setting up MySQL database."
+  ./rotom.bash/setup/setup-mysql.sh
 fi

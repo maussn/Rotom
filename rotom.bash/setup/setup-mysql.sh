@@ -16,6 +16,8 @@ done
 
 shift $((OPTIND - 1))
 
+echo "BASH LOG: Writing to database."
+
 # TODO: remove database credentials
 MYSQL_ROOT_USERNAME="root"
 MYSQL_ROOT_PASSWORD="root"
@@ -29,8 +31,8 @@ export ROTOM_READER_ITEMS_PASSWORD="password"
 export ROTOM_READER_LOANS_USERNAME="reader-loans"
 export ROTOM_READER_LOANS_PASSWORD="password"
 
-envsubst < setup-mysql-databases.sql | mysql -u "$MYSQL_ROOT_USERNAME" "-p$MYSQL_ROOT_PASSWORD"
+envsubst < rotom.bash/setup/setup-mysql-databases.sql | mysql -u "$MYSQL_ROOT_USERNAME" "-p$MYSQL_ROOT_PASSWORD"
 
 if $demo; then
-  envsubst < setup-mysql-demo.sql | mysql -u "$MYSQL_ROOT_USERNAME" "-p$MYSQL_ROOT_PASSWORD"
+  envsubst < rotom.bash/setup/setup-mysql-demo.sql | mysql -u "$MYSQL_ROOT_USERNAME" "-p$MYSQL_ROOT_PASSWORD"
 fi
