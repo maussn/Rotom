@@ -15,8 +15,8 @@ trait DatabaseReader extends ProfileProvider with Tables {
   val db: profile.backend.JdbcDatabaseDef
 
   val accountsTable = TableQuery[AccountsTable]
-  val itemsDatabase = TableQuery[ItemsTable]
-  val loansDatabase = TableQuery[LoansTable]
+  val itemsTable = TableQuery[ItemsTable]
+  val loansTable = TableQuery[LoansTable]
 
   import profile.api.* 
 
@@ -24,7 +24,7 @@ trait DatabaseReader extends ProfileProvider with Tables {
     Await.result(db.run(action), 2.seconds)
 
   def queryAllItems(): Seq[Item] =
-    val query = itemsDatabase
+    val query = itemsTable
     exec(query.result)
 
   def queryAccountByUsername(username: String): Option[Account] =
@@ -34,13 +34,15 @@ trait DatabaseReader extends ProfileProvider with Tables {
     result.headOption
 
   def queryItemById(itemId: UUID): Option[Item] = 
-    val query = itemsDatabase.filter(_.id === itemId)
+    val query = itemsTable.filter(_.id === itemId)
     val result = exec(query.result)
     if result.size > 1 then throw NonUniqueUUIDException(itemId)
     result.headOption
 
   // def queryAvailableItemById(itemId: UUID): Option[Item] =
-  //   val query = 
+  //   val query = for {
+  //     (items, loans) <- items
+  //   }
 }
 
 class MultipleEntriesException(
