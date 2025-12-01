@@ -21,5 +21,5 @@ case class ItemList(items: Seq[Item])
 implicit val encoderItemList: Encoder[ItemList] = semiauto.deriveEncoder[ItemList]
 implicit def entityEncoderItemList[F[_]]: EntityEncoder[F, ItemList] = jsonEncoderOf[F, ItemList]
 
-case class LoanRequest(itemId: UUID, userId: UUID, dateStart: LocalDateTime, dateEnd: LocalDateTime)
+case class LoanRequest(item: UUID, borrower: UUID, dateStart: LocalDateTime, dateEnd: LocalDateTime)
 implicit val decoderLoanRequest: EntityDecoder[IO, LoanRequest] = jsonOf[IO, LoanRequest]
