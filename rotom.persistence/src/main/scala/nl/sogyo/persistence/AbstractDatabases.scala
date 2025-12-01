@@ -27,6 +27,21 @@ trait DatabaseReader extends ProfileProvider with Tables {
     val query = itemsTable
     exec(query.result)
 
+  def queryAllAvailableItems(): Seq[Item] =
+    val query = itemsTable.filterNot {
+      item => !item.active ||
+        loansTable.filter(loan => loan.item === item.id && loan.dateReturned.isEmpty).exists
+    }
+    exec(query.result)
+  
+  def queryCatalogueLoggedInUser(userId: UUID): Seq[Item] = 
+    val query = itemsTable.filterNot {
+      item => !item.active ||
+        loansTable.filter(loan => loan.item === item.id && loan.dateReturned.isEmpty).exists ||
+        item.owner === userId
+    }
+    exec(query.result)
+
   def queryAccountByUsername(username: String): Option[Account] =
     val query = accountsTable.filter(_.username === username)
     val result = exec(query.result)
@@ -54,6 +69,7 @@ trait DatabaseReader extends ProfileProvider with Tables {
     val result = exec(query.result)
     if result.size > 1 then throw MultipleActiveLoansException(itemId)
     result.headOption
+
   
 }
 

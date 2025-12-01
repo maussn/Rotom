@@ -11,6 +11,7 @@ import org.http4s.dsl.io.*
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+import java.util.UUID
 
 val Api = Root / "api"
 
@@ -28,11 +29,11 @@ object GatewayServices:
           case Failure(e) => IO.pure(Response[IO](Status.Unauthorized).withEntity(e.getMessage()))
       } yield resp
     case req @ GET -> Api / "catalogue" =>
-      val items = databaseReader.queryAllItems()
+      val items = databaseReader.queryAllAvailableItems()
       Ok(ItemList(items))
-    // case req @ GET -> Api / "catalogue" / userId => 
-    //   val items = databaseProvider.itemsDatabase.queryItemsByUserId(UUID.fromString(userId))
-    //   Ok(ItemList(items))
+    case req @ GET -> Api / "catalogue" / userId =>
+      val items = databaseReader.queryCatalogueLoggedInUser(UUID.fromString(userId))
+      Ok(ItemList(items))
     case req @ POST -> Api / "loan" =>
       for {
         loanRequest <- req.as[LoanRequest]

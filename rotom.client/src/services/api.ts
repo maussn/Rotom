@@ -1,4 +1,4 @@
-import type { LoanRequest } from "../types"
+import { castToItems, type LoanRequest } from "../types"
 
 export async function sendLoginRequest(username: string, password: string) {
   const resp = await fetch("/api/login", {
@@ -28,8 +28,15 @@ export async function getCatalogue() {
   const resp = await fetch("/api/catalogue")
   if (resp.ok) {
     const body = await resp.json()
-    console.log(body)
-    return body
+    return castToItems(body.items)
+  }
+}
+
+export async function getCatalogueLoggedIn(userId: string) {
+  const resp = await fetch("/api/catalogue/" + userId)
+  if (resp.ok) {
+    const body = await resp.json()
+    return castToItems(body.items)
   }
 }
 
