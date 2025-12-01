@@ -36,12 +36,12 @@ class AuthenticationServiceTest extends CatsEffectSuite {
     val dbReader = H2DatabaseReader
     override def apply(): Kleisli[IO, Request[IO], Response[IO]] = service
     override def beforeEach(context: BeforeEach): Unit = 
-      createAccountsTable(dbReader.accountsDatabase)
-      insertTestAccount(dbReader.accountsDatabase)
+      createAccountsTable(dbReader)
+      insertTestAccount(dbReader)
       service = getServices(dbReader)
     override def afterEach(context: AfterEach): Unit = 
       val resetDatabaseQuery = sqlu"""DROP ALL OBJECTS"""
-      dbReader.accountsDatabase.exec(resetDatabaseQuery): Unit
+      dbReader.exec(resetDatabaseQuery): Unit
   }
   override def munitFixtures = List(service)
 
@@ -51,14 +51,14 @@ class AuthenticationServiceTest extends CatsEffectSuite {
 
   implicit val loginDecoder: EntityDecoder[IO, SuccessfulLogin] = jsonOf[IO, SuccessfulLogin]
 
-  def createAccountsTable(db: AccountsDatabase) =
-    val createAction = db.table.schema.create
-    db.exec(createAction)
+  def createAccountsTable(dbReader: DatabaseReader) =
+    val createAction = dbReader.accountsTable.schema.create
+    dbReader.exec(createAction)
     
 
-  def insertTestAccount(db: AccountsDatabase) = 
-    val insertAction = (db.table += Account(correctUuid, correctUsername, correctPassword, true)).map(_ => ())
-    db.exec(insertAction)
+  def insertTestAccount(dbReader: DatabaseReader) = 
+    val insertAction = (dbReader.accountsTable += Account(correctUuid, correctUsername, correctPassword, true)).map(_ => ())
+    dbReader.exec(insertAction)
   
   // Tests
   test("test authentication service success") {
