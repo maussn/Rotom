@@ -1,9 +1,9 @@
 import { pressTestButton } from "../services/api"
 
-export const About = () => {
+export const Test = () => {
   return <div className="center-screen">
     <div className="box">
-      The About page
+      The test page
     </div>
     <div>
       <button onClick={pressTestButton}>Test</button>
