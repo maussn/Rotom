@@ -39,10 +39,22 @@ trait DatabaseReader extends ProfileProvider with Tables {
     if result.size > 1 then throw NonUniqueUUIDException(itemId)
     result.headOption
 
-  // def queryAvailableItemById(itemId: UUID): Option[Item] =
-  //   val query = for {
-  //     (items, loans) <- items
-  //   }
+  def queryJoinItemsWithLoans(): Unit =
+    val query = for {
+      (loans, items) <- loansTable join itemsTable on (_.item === _.id)
+    } yield (loans, items)
+    print(exec(query.result))
+
+  def queryActiveLoan(itemId: UUID): Option[Loan] =
+    val query = for {
+      (loan, item) <- loansTable join itemsTable on (_.item === _.id)
+      if item.id === itemId
+      if loan.dateReturned.isEmpty
+    } yield loan
+    val result = exec(query.result)
+    if result.size > 1 then throw MultipleActiveLoansException(itemId)
+    result.headOption
+  
 }
 
 class MultipleEntriesException(
@@ -62,5 +74,14 @@ case class NonUniqueUUIDException(
   private val uuid: UUID,
   private val cause: Throwable = None.orNull
 ) extends MultipleEntriesException(
-  s"Found multiple entries for uuid=$uuid. This should not be thrown.", cause
+  s"Found multiple entries for uuid=$uuid. This should not be thrown.",
+  cause
+)
+
+case class MultipleActiveLoansException(
+  private val uuid: UUID,
+  private val cause: Throwable = None.orNull
+) extends MultipleEntriesException(
+  s"Found multiple active loans for item uuid=$uuid. This should not be thrown",
+  cause
 )

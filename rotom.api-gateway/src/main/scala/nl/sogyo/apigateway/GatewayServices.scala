@@ -3,6 +3,7 @@ package nl.sogyo.apigateway
 import cats.data.Kleisli
 import cats.effect.*
 import nl.sogyo.apigateway.Authentication.authenticate
+import nl.sogyo.apigateway.LoanProcessor.processLoanRequest
 import nl.sogyo.persistence.*
 import org.http4s.*
 import org.http4s.dsl.io.*
@@ -32,10 +33,15 @@ object GatewayServices:
     // case req @ GET -> Api / "catalogue" / userId => 
     //   val items = databaseProvider.itemsDatabase.queryItemsByUserId(UUID.fromString(userId))
     //   Ok(ItemList(items))
-    // case req @ POST -> Api / "loan" =>
-    //   for {
-    //     loan <- req.as[LoanRequest]
-    //     result = Try(processLoanRequest(loan, databaseReader))
-    //     resp <- Ok()
-    //   } yield(resp)
+    case req @ POST -> Api / "loan" =>
+      for {
+        loanRequest <- req.as[LoanRequest]
+        loan = Try(processLoanRequest(loanRequest, databaseReader))
+        resp <- loan match
+          case Failure(exception) => BadRequest(exception.getMessage())
+          case Success(value) => Ok()
+      } yield(resp)
+    case req @ GET -> Api / "test" =>
+      databaseReader.queryJoinItemsWithLoans()
+      Ok()
     }.orNotFound
