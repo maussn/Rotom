@@ -15,3 +15,10 @@ export function castToItems(raw: any[]): Item[] {
     active: Boolean(obj.active),
   }));
 }
+
+export type LoanRequest = {
+  item: string
+  borrower: string
+  dateStart: Date
+  dateEnd: Date
+}
