@@ -1,13 +1,11 @@
 import type { Item } from "../types";
 
 type Props = {
-  item: Item;
+  item: Item
+  handleLoanRequest: () => void
 };
 
-export default function ItemContainer({ item }: Props) {
-    const handleLoanRequest = () => {
-      
-    }
+export default function ItemContainer({ item, handleLoanRequest }: Props) {
     return (
     <article className="item-container">
       <div className="item-header">

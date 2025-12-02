@@ -40,7 +40,7 @@ object GatewayServices:
         loan = Try(processLoanRequest(loanRequest, databaseReader))
         resp <- loan match
           case Failure(exception) => BadRequest(exception.getMessage())
-          case Success(value) => Ok()
+          case Success(value) => Ok("Test")
       } yield(resp)
     case req @ GET -> Api / "test" =>
       databaseReader.queryJoinItemsWithLoans()
