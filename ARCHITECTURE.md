@@ -11,20 +11,22 @@ flowchart LR
     subgraph Backend
     apigateway(API-Gateway)
     kafka(Kafka)
-    accounts[(Accounts Table)]
+    db[(Database)]
     services(Other Services)
   end
 
   client --> apigateway
   apigateway -- produce event --> kafka
-  apigateway -- get --> accounts
+  apigateway -- get --> db
   kafka -- consume event --> services
+  services -- update --> db
     
 ```
 
+
 ```mermaid
 ---
-title: Entity Relationship Diagram of databases
+title: Entity Relationship Diagram of database
 ---
 
 erDiagram
