@@ -6,17 +6,38 @@ Prototype for a platform for loaning out items. Made as an individual project fo
 To install Rotom, execute the following line from the root directory of the project:
 
 ```
-sudo ./setup.sh
+sudo ./setup.sh -d
 ```
 
 It will ask some inputs. Use 'root' as the password for MySQL. Use default for all other options.
 
 # Running Rotom
 
-To run Rotom using a Vite server as reverse proxy, execute the following line from the root directory of the project:
+First, run kafka:
+```
+./run-kafka.sh
+```
+
+To see events, run the following lines in a new terminal:
+```
+cd kafka_*
+bin/kafka-console-consumer.sh --topic new_loans --from-beginning --boots
+```
+
+Lastly, run Rotom using a Vite server and follow the localhost port link (likely port 3000) using the following lines in a new terminal:
 
 ```
 ./run-dev.sh
+```
+
+Login credentials to try:  
+```
+username: jan
+password: password
+```
+```
+username: piet  
+password: password  
 ```
 
 # Stack
