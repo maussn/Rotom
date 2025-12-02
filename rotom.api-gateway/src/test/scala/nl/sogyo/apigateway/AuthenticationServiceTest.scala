@@ -36,9 +36,10 @@ class AuthenticationServiceTest extends CatsEffectSuite {
     val dbReader = H2DatabaseReader
     override def apply(): Kleisli[IO, Request[IO], Response[IO]] = service
     override def beforeEach(context: BeforeEach): Unit = 
+      val eventProducer = EventProducerMock()
       createAccountsTable(dbReader)
       insertTestAccount(dbReader)
-      service = getServices(dbReader)
+      service = getServices(dbReader, eventProducer)
     override def afterEach(context: AfterEach): Unit = 
       val resetDatabaseQuery = sqlu"""DROP ALL OBJECTS"""
       dbReader.exec(resetDatabaseQuery): Unit

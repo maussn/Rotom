@@ -3,7 +3,6 @@ package nl.sogyo.apigateway
 import cats.data.Kleisli
 import cats.effect.*
 import nl.sogyo.apigateway.Authentication.authenticate
-// import nl.sogyo.apigateway.LoanProcessor.processLoanRequest
 import nl.sogyo.persistence.*
 import org.http4s.*
 import org.http4s.dsl.io.*
@@ -13,12 +12,14 @@ import scala.util.Success
 import scala.util.Try
 import java.util.UUID
 import nl.sogyo.apigateway.LoanProcessor.processLoanRequest
+import nl.sogyo.kafka.EventProducer
 
 val Api = Root / "api"
 
+
 object GatewayServices:
 
-  def getServices(databaseReader: DatabaseReader): Kleisli[IO, Request[IO], Response[IO]] =
+  def getServices(databaseReader: DatabaseReader, eventProducer: EventProducer): Kleisli[IO, Request[IO], Response[IO]] =
     HttpRoutes.of[IO] {
     case req @ POST -> Api / "login" =>
       println("Info: Received login POST")
@@ -46,17 +47,38 @@ object GatewayServices:
       // Logging
       println("Info: Received loan request.")
       // 
-      for {
-        loanRequest <- req.as[LoanRequest]
-        _ = println("Info: Parsed JSON to LoanRequest")
-        loan = Try(processLoanRequest(loanRequest, databaseReader))
-        resp <- loan match
-          case Failure(exception) => BadRequest(exception.getMessage())
-          case Success(loan) => Ok()
-        _ = println("Info: Finished handling loan request")
-      } yield(resp)
+      handleLoanRequest(req, databaseReader, eventProducer)
+      // for {
+      //   loanRequest <- req.as[LoanRequest]
+      //   _ = println("Info: Parsed JSON to LoanRequest")
+      //   loan = Try(processLoanRequest(loanRequest, databaseReader))
+      //   resp <- loan match
+      //     case Failure(exception) => BadRequest(exception.getMessage())
+      //     case Success(loan) => Ok()
+      //   _ = println("Info: Finished handling loan request")
+      // } yield(resp)
 
     case req @ GET -> Api / "test" =>
       databaseReader.queryJoinItemsWithLoans()
       Ok()
     }.orNotFound
+
+  def handleLoanRequest(request: Request[IO], databaseReader: DatabaseReader, eventProducer: EventProducer) = 
+    request.as[LoanRequest].attempt.flatMap {
+      case Right(loanRequest) => 
+        val loanTry = Try(processLoanRequest(loanRequest, databaseReader))
+        loanTry match
+          case Failure(exception) => 
+            println(s"One of the fields is not correct. ${exception.toString()} ${exception.getMessage()}")
+            BadRequest(exception.getMessage())
+          case Success(loan) => 
+            val result = Try(eventProducer.sendLoanRequestEvent(loan))
+            result match
+              case Failure(exception) => 
+                println(s"Info: Failed to post loan request event. ${exception.toString()}: ${exception.getMessage()}")
+                InternalServerError(exception.getMessage())
+              case Success(value) => Ok()
+      case Left(exception) => 
+        println("Info: Received bad request body")
+        BadRequest(exception.getMessage())
+    }

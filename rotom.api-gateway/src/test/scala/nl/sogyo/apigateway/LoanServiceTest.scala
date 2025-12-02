@@ -40,9 +40,10 @@ class LoanServiceTest extends CatsEffectSuite {
     val dbReader = H2DatabaseReader
     override def apply(): Kleisli[IO, Request[IO], Response[IO]] = service
     override def beforeEach(context: BeforeEach): Unit = 
+      val eventProducer = EventProducerMock()
       setupAccountsTable(dbReader)
       setupItemsTable(dbReader)
-      service = getServices(dbReader)
+      service = getServices(dbReader, eventProducer)
     override def afterEach(context: AfterEach): Unit = 
       val resetDatabaseQuery = sqlu"""DROP ALL OBJECTS"""
       dbReader.exec(resetDatabaseQuery): Unit
@@ -131,7 +132,7 @@ class LoanServiceTest extends CatsEffectSuite {
     } yield ()
   }
 
-  test("Test 2") {
+  test("Test loan api request fails with typescript input format.") {
     val id = "a801bd21-ceb3-11f0-8ee0-40a8f04649c1"
     val borrower = "a7fb9549-ceb3-11f0-8ee0-40a8f04649c1"
     val dateStart = "2025-12-05T11:27:12.092Z"

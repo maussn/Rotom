@@ -56,6 +56,7 @@ export async function postLoanRequest(loanRequest: LoanRequest ) {
     },
     body: JSON.stringify(loanRequest)
   })
+  console.log(resp)
   return {
     statusCode: resp.status,
     statusText: resp.statusText
