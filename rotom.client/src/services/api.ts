@@ -12,6 +12,7 @@ export async function sendLoginRequest(username: string, password: string) {
       password: password
     })
   })
+  console
 
   if (resp.ok) {
     const body = await resp.json()
@@ -53,18 +54,10 @@ export async function postLoanRequest(loanRequest: LoanRequest ) {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      loanRequest
-    })
+    body: JSON.stringify(loanRequest)
   })
-
-  if (resp.ok) {
-    const body = await resp.json()
-    return body
-  } else {
-    return {
-      statusCode: resp.status,
-      statusText: resp.statusText
-    }
+  return {
+    statusCode: resp.status,
+    statusText: resp.statusText
   }
 }

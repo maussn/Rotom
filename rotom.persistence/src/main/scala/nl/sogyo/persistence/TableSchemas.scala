@@ -2,8 +2,8 @@ package nl.sogyo.persistence
 
 import nl.sogyo.persistence.ProfileProvider
 
-import java.time.LocalDateTime
 import java.util.UUID
+import java.time.OffsetDateTime
 
 case class Account(
   id: UUID,
@@ -24,9 +24,9 @@ case class Loan(
   id: UUID,
   item: UUID,
   borrower: UUID,
-  dateStart: LocalDateTime,
-  dateEnd: LocalDateTime,
-  dateReturned: Option[LocalDateTime]
+  dateStart: OffsetDateTime,
+  dateEnd: OffsetDateTime,
+  dateReturned: Option[OffsetDateTime]
 )
 
 trait Tables { this: ProfileProvider =>
@@ -58,9 +58,9 @@ trait Tables { this: ProfileProvider =>
     def id = column[UUID]("loan_id", O.PrimaryKey)
     def item = column[UUID]("item_id")
     def borrower = column[UUID]("borrower_id")
-    def dateStart = column[LocalDateTime]("loan_start")
-    def dateEnd = column[LocalDateTime]("loan_end")
-    def dateReturned = column[Option[LocalDateTime]]("loan_returned")
+    def dateStart = column[OffsetDateTime]("loan_start")
+    def dateEnd = column[OffsetDateTime]("loan_end")
+    def dateReturned = column[Option[OffsetDateTime]]("loan_returned")
     def itemFk = foreignKey("fk_loans_item", item, items)(_.id, onDelete = ForeignKeyAction.Restrict)
     def borrowerFk = foreignKey("fk_loans_borrower", borrower, accounts)(_.id, onDelete = ForeignKeyAction.Restrict)
     def * = (id, item, borrower, dateStart, dateEnd, dateReturned).mapTo[Loan]

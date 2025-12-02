@@ -12,12 +12,13 @@ import org.http4s.circe.*
 import org.http4s.implicits.*
 import slick.jdbc.H2Profile.api.*
 
-import java.time.LocalDate
-import java.time.Month
 import java.util.UUID
 import scala.concurrent.duration.*
+import java.time.ZoneOffset
+import java.time.LocalDate
+import java.time.Month
 
-class LoanServiceTest extends CatsEffectSuite:
+class LoanServiceTest extends CatsEffectSuite {
 
   // Making sure there is no IO timeout while debugging
 
@@ -118,8 +119,8 @@ class LoanServiceTest extends CatsEffectSuite:
     val requestObject = LoanRequest(
       item = drill.id,
       borrower = jan.id,
-      dateStart = LocalDate.of(2001, Month.JANUARY, 1).atStartOfDay(),
-      dateEnd = LocalDate.of(2000, Month.JANUARY, 1).atStartOfDay()
+      dateStart = LocalDate.of(2001, Month.JANUARY, 1).atStartOfDay().atOffset(ZoneOffset.UTC),
+      dateEnd = LocalDate.of(2000, Month.JANUARY, 1).atStartOfDay().atOffset(ZoneOffset.UTC)
     )
     val jsonBody = loanRequestToJson(requestObject)
     val apiRequest = Request[IO](Method.POST, uri"/api/loan").withEntity(jsonBody)
@@ -130,3 +131,47 @@ class LoanServiceTest extends CatsEffectSuite:
     } yield ()
   }
 
+  test("Test 2") {
+    val id = "a801bd21-ceb3-11f0-8ee0-40a8f04649c1"
+    val borrower = "a7fb9549-ceb3-11f0-8ee0-40a8f04649c1"
+    val dateStart = "2025-12-05T11:27:12.092Z"
+    val dateEnd = "2025-12-02T11:27:12.092Z"
+    val body = json"""{
+      "item": ${id},
+      "borrower": ${borrower},
+      "dateStart": ${dateStart},
+      "dateEnd": ${dateEnd}
+    }"""
+    val apiRequest = Request[IO](Method.POST, uri"/api/loan").withEntity(body)
+    val response = service().run(apiRequest)
+    for {
+      _ <- assertIO(response.map(_.status.code), 400)
+      _ <- assertIO(response.flatMap(_.as[String]), StartDateAfterEndDateException().getMessage())
+    } yield ()
+  }
+
+  test("Test casting of dates.") {
+    val id = "a801bd21-ceb3-11f0-8ee0-40a8f04649c1"
+    val borrower = "a7fb9549-ceb3-11f0-8ee0-40a8f04649c1"
+    val dateStart = "2025-12-05T11:27:12.092Z"
+    val dateEnd = "2025-12-02T11:27:12.092Z"
+    val body = json"""{
+      "item": ${id},
+      "borrower": ${borrower},
+      "dateStart": ${dateStart},
+      "dateEnd": ${dateEnd}
+    }"""
+    val apiRequest = Request[IO](Method.POST, uri"/api/loan").withEntity(body)
+    for {
+      loan <- apiRequest.as[LoanRequest]
+      t = print(loan)
+      t1 = print(loan.dateStart)
+      t2 = print(loan.dateEnd)
+      t3 = assert(loan.dateStart.isAfter(loan.dateEnd))
+    } yield()
+  }
+
+  test("Test LoanProcessor") {
+    
+  }
+}

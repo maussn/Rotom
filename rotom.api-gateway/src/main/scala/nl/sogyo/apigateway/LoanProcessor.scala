@@ -28,6 +28,7 @@ object LoanProcessor:
     checkIfItemIsAvailable(request, dbReader)
 
   def processLoanRequest(request: LoanRequest, dbReader: DatabaseReader): Loan = 
+    println("Info: Processing loan")
     checkStartDate(request)
     checkItem(request, dbReader)
     request match
