@@ -6,6 +6,10 @@
 
 echo "Starting kafka. See logs/kafka.log for the run logs."
 
+if [ ! -d "/logs" ]; then
+  mkdir "logs"
+fi
+
 (
   # Move to kafka directory
   cd kafka_* || exit
