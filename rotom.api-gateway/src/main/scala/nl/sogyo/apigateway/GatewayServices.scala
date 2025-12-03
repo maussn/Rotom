@@ -25,7 +25,6 @@ object GatewayServices:
       println("Info: Received login POST")
       for {
         user <- req.as[UserLogin]
-        _ = println(user)
         account = databaseReader.queryAccountByUsername(user.username)
         auth = Try(authenticate(user, account))
         resp <- auth match
