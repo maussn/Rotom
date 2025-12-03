@@ -1,5 +1,5 @@
 # item-lending-library
-Prototype for a platform for loaning out items. Made as an individual project for a traineeship.
+Prototype for a platform for loaning out items. Made as an individual project for a traineeship. In its current state, it is unfinished. Loans requests can be made and the events posted, but nothing is done with the events.
 
 # Installation
 
