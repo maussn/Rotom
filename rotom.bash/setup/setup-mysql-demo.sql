@@ -17,7 +17,7 @@ INSERT INTO rotom.items (owner_id, item_name)
   FROM rotom.accounts
   WHERE username = "piet";
 INSERT INTO rotom.items (owner_id, item_name)
-  SELECT user_id, "Landmower"
+  SELECT user_id, "Lawnmower"
   FROM rotom.accounts
   WHERE username = "piet";
 INSERT INTO rotom.items (owner_id, item_name)
