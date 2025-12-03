@@ -6,12 +6,15 @@ import slick.lifted.TableQuery
 import scala.concurrent.Await
 import scala.concurrent.duration.*
 import java.util.UUID
+import com.typesafe.scalalogging.Logger
 
 trait ProfileProvider {
   val profile: slick.jdbc.JdbcProfile
 }
 
 trait DatabaseReader extends ProfileProvider with Tables {
+  val logger = Logger(getClass.getName)
+
   val db: profile.backend.JdbcDatabaseDef
 
   val accountsTable = TableQuery[AccountsTable]
@@ -21,6 +24,7 @@ trait DatabaseReader extends ProfileProvider with Tables {
   import profile.api.* 
 
   def exec[T](action: DBIO[T]): T =
+    logger.debug(s"Querying database: action = ${action}")
     Await.result(db.run(action), 2.seconds)
 
   def queryAllItems(): Seq[Item] =

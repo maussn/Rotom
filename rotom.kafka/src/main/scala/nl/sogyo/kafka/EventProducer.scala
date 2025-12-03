@@ -12,9 +12,13 @@ import org.apache.kafka.common.errors.ProducerFencedException
 import java.util.Properties
 import org.apache.kafka.clients.producer.ProducerConfig
 import cats.effect.*
+import com.typesafe.scalalogging.Logger
 
 
 class EventProducer {
+
+  val logger = Logger(getClass.getName)
+
   val props: Properties = new Properties()
   props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
   props.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "test-transactional-id-1")
@@ -33,10 +37,9 @@ class EventProducer {
   def close(): IO[Unit] = IO(producer.close())
 
   def sendLoanRequestEvent(loan: Loan): Unit = 
-    println("Info: Converting loan to json string")
-    val jsonString: String = loan.asJson.noSpaces
-    println("Info: Posting loan request event")
+    logger.info(s"Posting loan request event: id = ${loan.id.toString()}")
     try {
+      val jsonString: String = loan.asJson.noSpaces
       producer.beginTransaction()
       producer.send(new ProducerRecord[String, String](topic, key.toString(), jsonString))
       key = key + 1
@@ -47,13 +50,13 @@ class EventProducer {
         throw e
       case e: ProducerFencedException => throw e
       case e: AuthorizationException => throw e
+      case e => throw e
     }
 }
 
 object EventProducer {
   def resource: Resource[IO, EventProducer] =
     Resource.make {
-      println("Info: Opening event producer")
       IO(new EventProducer()).flatTap(_.open())
     } {
       service => service.close()
