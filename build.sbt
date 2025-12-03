@@ -3,6 +3,7 @@ val MunitVersion = "1.1.1"
 val MunitCatsEffectVersion = "2.1.0"
 val LogbackVersion = "1.5.20"
 val JansiVersion = "2.4.0"
+val ScalaLoggingVersion = "3.9.5"
 
 lazy val commonSettings = Seq(
   scalaVersion := "3.7.3",
@@ -13,10 +14,11 @@ lazy val commonSettings = Seq(
     case x => (assembly / assemblyMergeStrategy).value.apply(x)
   },
   libraryDependencies ++= Seq(
-    "ch.qos.logback"        %   "logback-classic"     % LogbackVersion          % Runtime,
-    "org.fusesource.jansi"  %   "jansi"               % JansiVersion            % Runtime,
-    "org.scalameta"       %%  "munit"               % MunitVersion            % Test,
-    "org.typelevel"       %%  "munit-cats-effect"   % MunitCatsEffectVersion  % Test,
+    "com.typesafe.scala-logging" %% "scala-logging" % ScalaLoggingVersion,
+    "ch.qos.logback" % "logback-classic" % LogbackVersion % Runtime,
+    "org.fusesource.jansi" % "jansi" % JansiVersion % Runtime,
+    "org.scalameta" %% "munit" % MunitVersion % Test,
+    "org.typelevel" %% "munit-cats-effect" % MunitCatsEffectVersion % Test,
   ),
 )
 
@@ -25,10 +27,10 @@ val Http4sVersion = "0.23.30"
 
 lazy val Http4sDependencies = Seq(
   libraryDependencies ++= Seq(
-    "org.http4s"      %% "http4s-ember-server"  % Http4sVersion,
-    "org.http4s"      %% "http4s-ember-client"  % Http4sVersion,
-    "org.http4s"      %% "http4s-circe"         % Http4sVersion,
-    "org.http4s"      %% "http4s-dsl"           % Http4sVersion,
+    "org.http4s" %% "http4s-ember-server" % Http4sVersion,
+    "org.http4s" %% "http4s-ember-client" % Http4sVersion,
+    "org.http4s" %% "http4s-circe" % Http4sVersion,
+    "org.http4s" %% "http4s-dsl" % Http4sVersion,
   )
 )
 
@@ -36,9 +38,9 @@ val CirceVersion = "0.14.14"
 
 lazy val CirceDependencies = Seq(
   libraryDependencies ++= Seq(
-    "io.circe"        %% "circe-core"           % CirceVersion,
-    "io.circe"        %% "circe-generic"        % CirceVersion,
-    "io.circe"        %% "circe-literal"        % CirceVersion,
+    "io.circe" %% "circe-core" % CirceVersion,
+    "io.circe" %% "circe-generic" % CirceVersion,
+    "io.circe" %% "circe-literal" % CirceVersion,
   )
 )
 
@@ -48,9 +50,9 @@ val H2Version = "2.4.240"
 
 lazy val SlickDependencies = Seq(
   libraryDependencies ++= Seq(
-    "com.typesafe.slick"  %%  "slick"               % SlickTypesafeVersion,
-    "com.mysql"           %   "mysql-connector-j"   % SlickMySQLVersion,
-    "com.h2database"      %   "h2"                  % H2Version,
+    "com.typesafe.slick" %% "slick" % SlickTypesafeVersion,
+    "com.mysql" % "mysql-connector-j" % SlickMySQLVersion,
+    "com.h2database" % "h2" % H2Version,
   )
 )
 

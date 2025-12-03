@@ -13,37 +13,27 @@ import scala.util.Try
 import java.util.UUID
 import nl.sogyo.apigateway.LoanProcessor.processLoanRequest
 import nl.sogyo.kafka.EventProducer
+import com.typesafe.scalalogging.Logger
+import nl.sogyo.apigateway.Main.databaseProvider
 
 val Api = Root / "api"
 
-
 object GatewayServices:
+
+  val logger = Logger(getClass.getName)
 
   def getServices(databaseReader: DatabaseReader, eventProducer: EventProducer): Kleisli[IO, Request[IO], Response[IO]] =
     HttpRoutes.of[IO] {
     case req @ POST -> Api / "login" =>
-      println("Info: Received login POST")
-      for {
-        user <- req.as[UserLogin]
-        account = databaseReader.queryAccountByUsername(user.username)
-        auth = Try(authenticate(user, account))
-        resp <- auth match
-          case Success(userId) => Ok(SuccessfulLogin(userId))
-          case Failure(e) => IO.pure(Response[IO](Status.Unauthorized).withEntity(e.getMessage()))
-      } yield resp
+      handleLoginRequest(req, databaseReader)
 
     case req @ GET -> Api / "catalogue" =>
-      println("Info: Received not logged in catalogue GET")
-      val items = databaseReader.queryAllAvailableItems()
-      Ok(ItemList(items))
+      handleCatalogueRequest(databaseProvider)
 
     case req @ GET -> Api / "catalogue" / userId =>
-      println("Info: Received logged in catalogue GET")
-      val items = databaseReader.queryCatalogueLoggedInUser(UUID.fromString(userId))
-      Ok(ItemList(items))
+      handleCatalogueRequestLoggedIn(userId, databaseReader)
 
     case req @ POST -> Api / "loan" =>
-      println("Info: Received loan request.")
       handleLoanRequest(req, databaseReader, eventProducer)
 
     case req @ GET -> Api / "test" =>
@@ -51,22 +41,51 @@ object GatewayServices:
       Ok()
     }.orNotFound
 
+
+  def handleCatalogueRequest(databaseReader: DatabaseReader) =
+    logger.info("Catalogue GET received (not logged in).")
+    val items = databaseReader.queryAllAvailableItems()
+    Ok(ItemList(items))
+
+  
+  def handleCatalogueRequestLoggedIn(userId: String, databaseReader: DatabaseReader) =
+    logger.info("Catalogue GET received (logged in).")
+    val items = databaseReader.queryCatalogueLoggedInUser(UUID.fromString(userId))
+    Ok(ItemList(items))
+
+
+  def handleLoginRequest(request: Request[IO], databaseReader: DatabaseReader) =
+    logger.info("Login request received.")
+    for {
+      user <- request.as[UserLogin]
+      account = databaseReader.queryAccountByUsername(user.username)
+      auth = Try(authenticate(user, account))
+      resp <- auth match
+        case Success(userId) => Ok(SuccessfulLogin(userId))
+        case Failure(e) => IO.pure(Response[IO](Status.Unauthorized).withEntity(e.getMessage()))
+    } yield resp
+
+
   def handleLoanRequest(request: Request[IO], databaseReader: DatabaseReader, eventProducer: EventProducer) = 
+    logger.info("Loan request received.")
     request.as[LoanRequest].attempt.flatMap {
       case Right(loanRequest) => 
         val loanTry = Try(processLoanRequest(loanRequest, databaseReader))
         loanTry match
           case Failure(exception) => 
-            println(s"One of the fields is not correct. ${exception.toString()} ${exception.getMessage()}")
+            logger.warn(s"Invalid data in loan request: cause = ${exception.toString()}")
             BadRequest(exception.getMessage())
           case Success(loan) => 
             val result = Try(eventProducer.sendLoanRequestEvent(loan))
             result match
               case Failure(exception) => 
-                println(s"Info: Failed to post loan request event. ${exception.toString()}: ${exception.getMessage()}")
+                logger.error(s"Failed to post loan request event: " +
+                  s"id = ${loan.id.toString()}, " +
+                  s"cause = ${exception.toString()} " +
+                  s"message = ${exception.getMessage()}")
                 InternalServerError(exception.getMessage())
               case Success(value) => Ok()
       case Left(exception) => 
-        println("Info: Received bad request body")
+        logger.warn(s"Invalid request body received on /api/loan.")
         BadRequest(exception.getMessage())
     }
