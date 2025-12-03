@@ -44,19 +44,8 @@ object GatewayServices:
       Ok(ItemList(items))
 
     case req @ POST -> Api / "loan" =>
-      // Logging
       println("Info: Received loan request.")
-      // 
       handleLoanRequest(req, databaseReader, eventProducer)
-      // for {
-      //   loanRequest <- req.as[LoanRequest]
-      //   _ = println("Info: Parsed JSON to LoanRequest")
-      //   loan = Try(processLoanRequest(loanRequest, databaseReader))
-      //   resp <- loan match
-      //     case Failure(exception) => BadRequest(exception.getMessage())
-      //     case Success(loan) => Ok()
-      //   _ = println("Info: Finished handling loan request")
-      // } yield(resp)
 
     case req @ GET -> Api / "test" =>
       databaseReader.queryJoinItemsWithLoans()
