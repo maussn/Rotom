@@ -18,10 +18,10 @@ First, run kafka:
 ./run-kafka.sh
 ```
 
-To see events, run the following lines in a new terminal:
+To see events for new loans, run the following lines in a new terminal:
 ```
 cd kafka_*
-bin/kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092
+bin/kafka-console-consumer.sh --topic new_loans --from-beginning --bootstrap-server localhost:9092
 ```
 
 Lastly, run Rotom using a Vite server and follow the localhost port link (likely port 3000) using the following lines in a new terminal:
