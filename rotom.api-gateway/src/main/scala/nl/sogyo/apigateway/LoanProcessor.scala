@@ -27,19 +27,10 @@ object LoanProcessor:
     checkIfItemExists(request, dbReader)
     checkIfItemIsAvailable(request, dbReader)
 
-  def processLoanRequest(request: LoanRequest, dbReader: DatabaseReader): Loan = 
+  def processLoanRequest(request: LoanRequest, dbReader: DatabaseReader): Unit = 
     println("Info: Processing loan")
     checkStartDate(request)
     checkItem(request, dbReader)
-    request match
-      case LoanRequest(item, borrower, dateStart, dateEnd) => Loan(
-        id = UUID.randomUUID(),
-        item,
-        borrower,
-        dateStart,
-        dateEnd, 
-        dateReturned = None
-      )
       
 
 final case class StartDateAfterEndDateException(

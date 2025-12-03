@@ -75,16 +75,15 @@ object GatewayServices:
           case Failure(exception) => 
             logger.warn(s"Invalid data in loan request: cause = ${exception.toString()}")
             BadRequest(exception.getMessage())
-          case Success(loan) => 
-            val result = Try(eventProducer.sendLoanRequestEvent(loan))
+          case Success(_) => 
+            val result = Try(eventProducer.sendLoanRequestEvent(loanRequest))
             result match
               case Failure(exception) => 
                 logger.error(s"Failed to post loan request event: " +
-                  s"id = ${loan.id.toString()}, " +
                   s"cause = ${exception.toString()} " +
                   s"message = ${exception.getMessage()}")
                 InternalServerError(exception.getMessage())
-              case Success(value) => Ok()
+              case Success(_) => Ok()
       case Left(exception) => 
         logger.warn(s"Invalid request body received on /api/loan.")
         BadRequest(exception.getMessage())
