@@ -4,17 +4,15 @@ import cats.effect.ExitCode
 import cats.effect.IO
 import cats.effect.IOApp
 import com.comcast.ip4s.*
-import org.http4s.ember.server.*
-import nl.sogyo.persistence.MySQLDatabaseReader
 import nl.sogyo.kafka.EventProducer
-import cats.effect.Resource
-import org.http4s.server.Server
+import nl.sogyo.persistence.MySQLDatabaseReader
+import org.http4s.ember.server.*
 
 object Main extends IOApp:
 
   val databaseProvider = MySQLDatabaseReader
 
-  val serverResource : Resource[IO, Server] =
+  def getServerResource() = 
     for {
       eventProducer <- EventProducer.resource
       services = GatewayServices.getServices(
@@ -31,4 +29,4 @@ object Main extends IOApp:
 
 
   def run(args: List[String]): IO[ExitCode] =
-    serverResource.useForever
+    getServerResource().useForever

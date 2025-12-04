@@ -34,9 +34,9 @@ class AuthenticationServiceTest extends CatsEffectSuite {
   val service = new Fixture[Kleisli[IO, Request[IO], Response[IO]]]("service") {
     var service: Kleisli[IO, Request[IO], Response[IO]] = null
     val dbReader = H2DatabaseReader
+    val eventProducer = EventProducerMock()
     override def apply(): Kleisli[IO, Request[IO], Response[IO]] = service
     override def beforeEach(context: BeforeEach): Unit = 
-      val eventProducer = EventProducerMock()
       createAccountsTable(dbReader)
       insertTestAccount(dbReader)
       service = getServices(dbReader, eventProducer)
