@@ -6,23 +6,23 @@ import io.circe.*
 import io.circe.literal.*
 import munit.CatsEffectSuite
 import nl.sogyo.apigateway.GatewayServices.getServices
+import nl.sogyo.kafka.EventProducerMock
 import nl.sogyo.persistence.*
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.implicits.*
 import slick.jdbc.H2Profile.api.*
 
-import java.util.UUID
-import scala.concurrent.duration.*
-import java.time.ZoneOffset
 import java.time.LocalDate
 import java.time.Month
-import nl.sogyo.kafka.EventProducerMock
+import java.time.ZoneOffset
+import java.util.UUID
+import scala.concurrent.duration.*
 
-class LoanServiceTest extends CatsEffectSuite {
+
+class ServicesTest extends CatsEffectSuite {
 
   // Making sure there is no IO timeout while debugging
-
   override def munitIOTimeout: Duration =
     if (isDebugging) Duration.Inf
     else 30.seconds
@@ -34,55 +34,25 @@ class LoanServiceTest extends CatsEffectSuite {
       .toString
       .contains("jdwp")
 
-  // Setting up service
-  
+  // Setting up service fixture
+
   val service = new Fixture[Kleisli[IO, Request[IO], Response[IO]]]("service") {
     var service: Kleisli[IO, Request[IO], Response[IO]] = null
     val dbReader = H2DatabaseReader
+    val eventProducer = EventProducerMock()
     override def apply(): Kleisli[IO, Request[IO], Response[IO]] = service
     override def beforeEach(context: BeforeEach): Unit = 
-      val eventProducer = EventProducerMock()
       setupAccountsTable(dbReader)
-      setupItemsTable(dbReader)
       service = getServices(dbReader, eventProducer)
     override def afterEach(context: AfterEach): Unit = 
       val resetDatabaseQuery = sqlu"""DROP ALL OBJECTS"""
       dbReader.exec(resetDatabaseQuery): Unit
+          
   }
-
   override def munitFixtures = List(service)
 
-  // Setup accounts database
-  
-  def createAccountsTable(dbReader: DatabaseReader) =
-    val createAction = dbReader.accountsTable.schema.create
-    dbReader.exec(createAction)
-    
-
-  def insertTestAccount(dbReader: DatabaseReader, account: Account) = 
-    val insertAction = (dbReader.accountsTable += account).map(_ => ())
-    dbReader.exec(insertAction)
-
-  def setupAccountsTable(dbReader: DatabaseReader) =
-      createAccountsTable(dbReader)
-      insertTestAccount(dbReader, jan)
-      insertTestAccount(dbReader, piet)
-
-  // Setup items database
-
-  def createItemsDatabase(dbReader: DatabaseReader) = 
-    val createAction = dbReader.itemsTable.schema.create
-    dbReader.exec(createAction)
-
-  def insertTestItem(dbReader: DatabaseReader, item: Item) =
-    val insertAction = (dbReader.itemsTable += item).map(_ => ())
-    dbReader.exec(insertAction)
-  
-  def setupItemsTable(dbReader: DatabaseReader) =
-    createItemsDatabase(dbReader)
-    insertTestItem(dbReader, drill)
-
   // Test data
+
   val jan = Account(
     id = UUID.randomUUID(),
     username = "jan",
@@ -105,8 +75,39 @@ class LoanServiceTest extends CatsEffectSuite {
     active = true
   )
 
-  // Utils
+  // Setup accounts database
 
+  def createAccountsTable(dbReader: DatabaseReader) =
+    val createAction = dbReader.accountsTable.schema.create
+    dbReader.exec(createAction)
+    
+
+  def insertTestAccount(dbReader: DatabaseReader, account: Account) = 
+    val insertAction = (dbReader.accountsTable += account).map(_ => ())
+    dbReader.exec(insertAction)
+
+  
+  def setupAccountsTable(dbReader: DatabaseReader) =
+    createAccountsTable(dbReader)
+    insertTestAccount(dbReader, jan)
+    insertTestAccount(dbReader, piet)
+
+  //  Setup items database
+
+  def createItemsDatabase(dbReader: DatabaseReader) = 
+    val createAction = dbReader.itemsTable.schema.create
+    dbReader.exec(createAction)
+
+  def insertTestItem(dbReader: DatabaseReader, item: Item) =
+    val insertAction = (dbReader.itemsTable += item).map(_ => ())
+    dbReader.exec(insertAction)
+  
+  def setupItemsTable(dbReader: DatabaseReader) =
+    createItemsDatabase(dbReader)
+    insertTestItem(dbReader, drill)
+
+  // Utils
+    
   def loanRequestToJson(req: LoanRequest) =
     json"""{
       "item": ${req.item.toString()},
@@ -114,8 +115,42 @@ class LoanServiceTest extends CatsEffectSuite {
       "dateStart": ${req.dateStart.toString()},
       "dateEnd": ${req.dateEnd.toString()}
     }"""
+  
+  // Authentication service tests
+  test("test authentication service success") {
+    val jsonBody = json"""{"username": ${jan.username}, "password": ${jan.password}}"""
+    val loginRequest = Request[IO](Method.POST, uri"/api/login").withEntity(jsonBody)
+    val response = service().run(loginRequest)
+    for {
+      _ <- assertIO(response.map(_.status.code), 200)
+      body  <- response.flatMap(_.as[SuccessfulLogin])
+      _ <- IO(assert(body.userId == jan.id))
+    } yield ()
+  }
 
-  // Tests
+  test("test authentication service wrong password") {
+    val wrongPassword = "wrongpassword"
+    val jsonBody = json"""{"username": ${jan.username}, "password": ${wrongPassword}}"""
+    val loginRequest = Request[IO](Method.POST, uri"/api/login").withEntity(jsonBody)
+    val response = service().run(loginRequest)
+    for {
+      _ <- assertIO(response.map(_.status.code), 401)
+      _ <- assertIO(response.flatMap(_.as[String]), "Incorrect password.")
+    } yield ()
+  }
+
+  test("test authentication service wrong username") {
+    val wrongUsername = "klaas"
+    val jsonBody = json"""{"username": ${wrongUsername}, "password": ${jan.password}}"""
+    val loginRequest = Request[IO](Method.POST, uri"/api/login").withEntity(jsonBody)
+    val response = service().run(loginRequest)
+    for {
+      _ <- assertIO(response.map(_.status.code), 401)
+      _ <- assertIO(response.flatMap(_.as[String]), "Incorrect username.")
+    } yield ()
+  }
+
+  // Loan request service
 
   test("Test request loan with incorrect dates returns Bad Request") {
     val requestObject = LoanRequest(
@@ -171,9 +206,5 @@ class LoanServiceTest extends CatsEffectSuite {
       t2 = print(loan.dateEnd)
       t3 = assert(loan.dateStart.isAfter(loan.dateEnd))
     } yield()
-  }
-
-  test("Test LoanProcessor") {
-    
   }
 }

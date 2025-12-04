@@ -15,6 +15,7 @@ case class UserLogin(username: String, password: String)
 implicit val decoderUserLogin: EntityDecoder[IO, UserLogin] = jsonOf[IO, UserLogin]
 
 case class SuccessfulLogin(userId: UUID)
+implicit val decoderSuccessfulLogin: EntityDecoder[IO, SuccessfulLogin] = jsonOf[IO, SuccessfulLogin]
 implicit val encoderSuccessfulLogin: Encoder[SuccessfulLogin] = semiauto.deriveEncoder[SuccessfulLogin]
 implicit def entityEncoderSuccessfulLogin[F[_]]: EntityEncoder[F, SuccessfulLogin] = jsonEncoderOf[F, SuccessfulLogin]
 
