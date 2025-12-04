@@ -1,0 +1,7 @@
+.metals
+.vscode
+.bloop
+*.class
+target
+/kafka*
+/logs
