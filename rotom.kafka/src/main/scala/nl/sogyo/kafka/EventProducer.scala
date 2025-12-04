@@ -15,15 +15,9 @@ import org.apache.kafka.common.errors.ProducerFencedException
 import java.util.Properties
 import java.util.UUID
 
-
-class EventProducer {
+class EventProducer extends IEventProducer:
 
   val logger = Logger(getClass.getName)
-
-  val props: Properties = setupProperties()
-  val producer = new KafkaProducer[String, String](props)
-  val topicNewLoans = "new_loans"
-  var key = 0
 
   private def setupProperties(): Properties =
     val props = new Properties()
@@ -35,11 +29,16 @@ class EventProducer {
     // props.put("acks","all")
     props
 
-  def open(): IO[Unit] =IO(producer.initTransactions())
-  
-  def close(): IO[Unit] = IO(producer.close())
+  val props = setupProperties()
+  val producer = new KafkaProducer[String, String](props)
+  val topicNewLoans = "new_loans"
+  var key = 0
 
-  def sendLoanRequestEvent(loanRequest: LoanRequest): Unit = 
+  override def open: IO[Unit] = IO(producer.initTransactions())
+
+  override def close: IO[Unit] = IO(producer.close())
+
+  override def sendLoanRequestEvent(loanRequest: LoanRequest): Unit = 
     logger.info(s"Posting loan request event.")
     try {
       val loan = loanRequest match
@@ -65,13 +64,12 @@ class EventProducer {
       case e: AuthorizationException => throw e
       case e => throw e
     }
-}
 
-object EventProducer {
+
+object EventProducer:
   def resource: Resource[IO, EventProducer] =
     Resource.make {
-      IO(new EventProducer()).flatTap(_.open())
+      IO(new EventProducer()).flatTap(_.open)
     } {
-      service => service.close()
+      service => service.close
     }
-}

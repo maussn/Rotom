@@ -17,6 +17,7 @@ import scala.concurrent.duration.*
 import java.time.ZoneOffset
 import java.time.LocalDate
 import java.time.Month
+import nl.sogyo.kafka.EventProducerMock
 
 class LoanServiceTest extends CatsEffectSuite {
 

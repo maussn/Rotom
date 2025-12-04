@@ -12,9 +12,9 @@ import scala.util.Success
 import scala.util.Try
 import java.util.UUID
 import nl.sogyo.apigateway.LoanProcessor.processLoanRequest
-import nl.sogyo.kafka.EventProducer
 import com.typesafe.scalalogging.Logger
 import nl.sogyo.apigateway.Main.databaseProvider
+import nl.sogyo.kafka.IEventProducer
 
 val Api = Root / "api"
 
@@ -22,7 +22,7 @@ object GatewayServices:
 
   val logger = Logger(getClass.getName)
 
-  def getServices(databaseReader: DatabaseReader, eventProducer: EventProducer): Kleisli[IO, Request[IO], Response[IO]] =
+  def getServices(databaseReader: DatabaseReader, eventProducer: IEventProducer): Kleisli[IO, Request[IO], Response[IO]] =
     HttpRoutes.of[IO] {
     case req @ POST -> Api / "login" =>
       handleLoginRequest(req, databaseReader)
@@ -66,7 +66,7 @@ object GatewayServices:
     } yield resp
 
 
-  def handleLoanRequest(request: Request[IO], databaseReader: DatabaseReader, eventProducer: EventProducer) = 
+  def handleLoanRequest(request: Request[IO], databaseReader: DatabaseReader, eventProducer: IEventProducer) = 
     logger.info("Loan request received.")
     request.as[LoanRequest].attempt.flatMap {
       case Right(loanRequest) => 

@@ -15,6 +15,7 @@ import slick.jdbc.H2Profile.api.*
 
 import scala.concurrent.duration.*
 import java.util.UUID
+import nl.sogyo.kafka.EventProducerMock
 
 
 class AuthenticationServiceTest extends CatsEffectSuite {
