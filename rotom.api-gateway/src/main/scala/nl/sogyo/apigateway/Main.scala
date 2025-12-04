@@ -4,20 +4,29 @@ import cats.effect.ExitCode
 import cats.effect.IO
 import cats.effect.IOApp
 import com.comcast.ip4s.*
+import nl.sogyo.kafka.EventProducer
+import nl.sogyo.persistence.MySQLDatabaseReader
 import org.http4s.ember.server.*
-import nl.sogyo.persistence.MySQLDatabaseProvider
 
 object Main extends IOApp:
 
-  val databaseProvider = MySQLDatabaseProvider
-  val services = GatewayServices.getServices(databaseProvider)
+  val databaseProvider = MySQLDatabaseReader
+
+  def getServerResource() = 
+    for {
+      eventProducer <- EventProducer.resource
+      services = GatewayServices.getServices(
+        databaseReader = databaseProvider,
+        eventProducer = eventProducer 
+      )
+      server <- EmberServerBuilder
+        .default[IO]
+        .withHost(ipv4"0.0.0.0")
+        .withPort(port"8080")
+        .withHttpApp(services)
+        .build
+    } yield server
+
 
   def run(args: List[String]): IO[ExitCode] =
-    EmberServerBuilder
-      .default[IO]
-      .withHost(ipv4"0.0.0.0")
-      .withPort(port"8080")
-      .withHttpApp(services)
-      .build
-      .use(_ => IO.never)
-      .as(ExitCode.Success)
+    getServerResource().useForever

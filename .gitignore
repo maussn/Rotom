@@ -3,3 +3,5 @@
 .bloop
 *.class
 target
+/kafka*
+/logs

@@ -146,3 +146,39 @@ button:focus-visible {
   gap: 1rem;
   margin-top: 1.5rem;
 }
+
+/* Item container and scroll view */
+
+.item-container {
+  border: 1px solid #ccc;
+  padding: 16px;
+  border-radius: 12px;
+  font-family: sans-serif;
+}
+
+.item-title {
+font-size: 20px;
+margin-bottom: 8px;
+font-weight: bold;
+}
+
+.item-desc {
+margin: 4px 0;
+font-size: 14px;
+/* color: #444; */
+}
+
+.items-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}

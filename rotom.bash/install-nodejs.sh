@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-apt update
+sudo apt update
 # Node.js
-echo "Downloading and installing Node.js"
+echo "BASH LOG: Downloading and installing Node.js"
 # Download and install nvm:
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
@@ -10,15 +10,10 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 \. "$HOME/.nvm/nvm.sh"
 
 # Download and install Node.js:
-nvm install 24
+sudo nvm install 24
 
 # Verify the Node.js version:
 node -v # Should print "v24.11.1".
 
 # Verify npm version:
 npm -v # Should print "11.6.2".
-
-# Install project dependencies
-(cd ../../rotom.client
-npm install
-cd ../rotom.bash/setup)

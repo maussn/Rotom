@@ -19,12 +19,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (name: string, password: string) => {
     const body = await sendLoginRequest(name, password)
-    console.log(body)
-    console.log(typeof body.uuid)
-    if (body.uuid) {
+    if (body.userId) {
       setLoggedIn(true)
       setUsername(name)
-      setId(body.uuid)
+      setId(body.userId)
     } else {
 
     }

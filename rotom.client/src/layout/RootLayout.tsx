@@ -10,8 +10,8 @@ export const RootLayout = () => {
     <header id="logo-header">
       <img src={logo}/>
       <nav className="navbar">
-        <NavButton to="/" text="catalogue" isActive={pathname === "/"} />
-        <NavButton to="/about" text="about" isActive={pathname === "/"} />
+        <NavButton to="/" text="Catalogue" isActive={pathname === "/"} />
+        <NavButton to="/test" text="Test" isActive={pathname === "/"} />
       </nav>
       <LoginMenu/>
     </header>

@@ -1,20 +1,61 @@
 # Architecture
-Diagram of services present in Rotom.
+
 ```mermaid
+---
+title: Services present in Rotom
+---
 flowchart LR
-    subgraph Frontend
+  subgraph Frontend
     client(Client)
-    end
+  end
     subgraph Backend
     apigateway(API-Gateway)
     kafka(Kafka)
-    accounts[(Accounts Table)]
+    db[(Database)]
     services(Other Services)
-    end
+  end
 
-    client --> apigateway
-    apigateway -- produce event --> kafka
-    apigateway -- get --> accounts
-    kafka -- consume event --> services
+  client --> apigateway
+  apigateway -- produce event --> kafka
+  apigateway -- get --> db
+  kafka -- consume event --> services
+  services -- update --> db
     
+```
+
+
+```mermaid
+---
+title: Entity Relationship Diagram of database
+---
+
+erDiagram
+  
+  ACCOUNTS {
+    uuid user_id PK
+    varchar username
+    varchar password
+    boolean is_active
+  }
+
+  ITEMS {
+    uuid item_id PK
+    uuid owner_id FK "on delete cascade"
+    varchar item_name
+    text item_description
+  }
+
+  LOANS {
+    uuid loan_id PK
+    uuid item_id FK "on delete restrict"
+    uuid borrower_id FK "on delete restrict"
+    datetime loan_start
+    datetime loan_end
+    datetime loan_returned
+  }
+
+  ACCOUNTS ||--o{ ITEMS : "is owned by"
+  ITEMS }|--o{ LOANS : "is loaned"
+  LOANS }o--|| ACCOUNTS : "is loaned by"
+
 ```
