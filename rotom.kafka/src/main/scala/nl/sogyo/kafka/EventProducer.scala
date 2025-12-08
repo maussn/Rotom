@@ -31,7 +31,6 @@ class EventProducer extends IEventProducer:
 
   val props = setupProperties()
   val producer = new KafkaProducer[String, String](props)
-  val topicNewLoans = "new_loans"
   var key = 0
 
   override def open: IO[Unit] = IO(producer.initTransactions())
@@ -53,7 +52,7 @@ class EventProducer extends IEventProducer:
         
       val jsonString: String = loan.asJson.noSpaces
       producer.beginTransaction()
-      producer.send(new ProducerRecord[String, String](topicNewLoans, key.toString(), jsonString))
+      producer.send(new ProducerRecord[String, String](Topics.newLoans, key.toString(), jsonString))
       key = key + 1
       producer.commitTransaction()
     } catch {
