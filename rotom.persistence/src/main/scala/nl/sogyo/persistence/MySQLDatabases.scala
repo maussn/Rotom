@@ -4,3 +4,8 @@ object MySQLDatabaseReader extends DatabaseReader {
   override val profile = slick.jdbc.MySQLProfile
   override val db = profile.api.Database.forConfig("rotom-root")
 }
+
+object MySQLDatabaseWriter extends DatabaseWriter {
+  override val profile = slick.jdbc.MySQLProfile
+  override val db = profile.api.Database.forConfig(("rotom-root"))
+}

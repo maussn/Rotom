@@ -2,9 +2,12 @@ package nl.sogyo.apigateway
 
 import nl.sogyo.persistence.*
 import java.util.UUID
+import com.typesafe.scalalogging.Logger
 
 
 object LoanProcessor:
+
+  val logger = Logger(getClass.getName)
 
   private def checkStartDate(request: LoanRequest): Unit =
     if request.dateStart.isAfter(request.dateEnd) then
@@ -28,7 +31,6 @@ object LoanProcessor:
     checkIfItemIsAvailable(request, dbReader)
 
   def processLoanRequest(request: LoanRequest, dbReader: DatabaseReader): Unit = 
-    println("Info: Processing loan")
     checkStartDate(request)
     checkItem(request, dbReader)
       

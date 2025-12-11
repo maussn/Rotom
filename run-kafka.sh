@@ -10,6 +10,8 @@ if [ ! -d "logs" ]; then
   mkdir "logs"
 fi
 
+./rotom.bash/setup-kafka.sh
+
 (
   # Move to kafka directory
   cd kafka_* || exit
