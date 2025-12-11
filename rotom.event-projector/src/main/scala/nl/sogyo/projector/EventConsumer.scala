@@ -1,4 +1,4 @@
-package nl.sogyo.kafka
+package nl.sogyo.projector
 
 import com.typesafe.scalalogging.Logger
 import nl.sogyo.kafka.Topics
