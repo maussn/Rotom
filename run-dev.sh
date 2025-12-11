@@ -3,6 +3,12 @@
 # Script for running all required Rotom instances
 
 # Start Vite server in the background
+if [ ! -d "logs" ]; then
+  mkdir "logs"
+fi
+
+sbt compile
+
 (
   echo "Starting Vite server."
   cd rotom.client || exit
@@ -23,5 +29,6 @@ cleanup() {
 trap cleanup INT TERM EXIT
 
 # Run Scala backend
-echo "Starting backend server."
-sbt compile run
+echo "Starting backend server. See ./logs for STDOUT."
+
+sbt "project apiGateway" run > logs/api-gateway.log
