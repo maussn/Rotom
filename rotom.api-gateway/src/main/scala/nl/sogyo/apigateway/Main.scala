@@ -10,13 +10,13 @@ import org.http4s.ember.server.*
 
 object Main extends IOApp:
 
-  val databaseProvider = MySQLDatabaseReader
+  val databaseReader = MySQLDatabaseReader
 
   def getServerResource() = 
     for {
       eventProducer <- EventProducer.resource
       services = GatewayServices.getServices(
-        databaseReader = databaseProvider,
+        databaseReader = databaseReader,
         eventProducer = eventProducer 
       )
       server <- EmberServerBuilder

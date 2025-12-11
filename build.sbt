@@ -41,6 +41,7 @@ lazy val CirceDependencies = Seq(
     "io.circe" %% "circe-core" % CirceVersion,
     "io.circe" %% "circe-generic" % CirceVersion,
     "io.circe" %% "circe-literal" % CirceVersion,
+    "io.circe" %% "circe-parser" % CirceVersion,
   )
 )
 
@@ -80,6 +81,7 @@ lazy val kafka = (project in file("rotom.kafka"))
     commonSettings,
     name := "kafka",
     KafkaDependencies,
+    CirceDependencies
   )
 
 lazy val eventProjector = (project in file("rotom.event-projector"))
@@ -89,7 +91,8 @@ lazy val eventProjector = (project in file("rotom.event-projector"))
     name := "event-projector",
     Compile / run / mainClass := Some("nl.sogyo.projector.app"),
     Http4sDependencies,
-    KafkaDependencies
+    KafkaDependencies,
+    CirceDependencies
   )
 
 lazy val apiGateway = (project in file("rotom.api-gateway"))

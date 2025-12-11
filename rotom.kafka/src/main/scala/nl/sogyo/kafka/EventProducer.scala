@@ -26,7 +26,6 @@ class EventProducer extends IEventProducer:
     props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true)
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
-    // props.put("acks","all")
     props
 
   val props = setupProperties()
