@@ -41,6 +41,7 @@ lazy val CirceDependencies = Seq(
     "io.circe" %% "circe-core" % CirceVersion,
     "io.circe" %% "circe-generic" % CirceVersion,
     "io.circe" %% "circe-literal" % CirceVersion,
+    "io.circe" %% "circe-parser" % CirceVersion,
   )
 )
 
@@ -74,6 +75,26 @@ lazy val persistence = (project in file("rotom.persistence"))
     Http4sDependencies,
   )
 
+lazy val kafka = (project in file("rotom.kafka"))
+  .dependsOn(persistence)
+  .settings(
+    commonSettings,
+    name := "kafka",
+    KafkaDependencies,
+    CirceDependencies
+  )
+
+lazy val eventProjector = (project in file("rotom.event-projector"))
+  .dependsOn(persistence, kafka)
+  .settings(
+    commonSettings,
+    name := "event-projector",
+    Compile / run / mainClass := Some("nl.sogyo.projector.app"),
+    Http4sDependencies,
+    KafkaDependencies,
+    CirceDependencies
+  )
+
 lazy val apiGateway = (project in file("rotom.api-gateway"))
   .dependsOn(persistence, kafka)
   .settings(
@@ -83,15 +104,6 @@ lazy val apiGateway = (project in file("rotom.api-gateway"))
     Http4sDependencies,
     CirceDependencies,
   )
-
-lazy val kafka = (project in file("rotom.kafka"))
-  .dependsOn(persistence)
-  .settings(
-    commonSettings,
-    name := "kafka",
-    KafkaDependencies,
-  )
-
 
 lazy val root = (project in file("."))
   .aggregate(apiGateway, persistence, kafka)

@@ -13,7 +13,6 @@ import scala.util.Try
 import java.util.UUID
 import nl.sogyo.apigateway.LoanProcessor.processLoanRequest
 import com.typesafe.scalalogging.Logger
-import nl.sogyo.apigateway.Main.databaseProvider
 import nl.sogyo.kafka.IEventProducer
 
 val Api = Root / "api"
@@ -28,7 +27,7 @@ object GatewayServices:
       handleLoginRequest(req, databaseReader)
 
     case req @ GET -> Api / "catalogue" =>
-      handleCatalogueRequest(databaseProvider)
+      handleCatalogueRequest(databaseReader)
 
     case req @ GET -> Api / "catalogue" / userId =>
       handleCatalogueRequestLoggedIn(userId, databaseReader)

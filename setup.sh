@@ -41,6 +41,9 @@ if ! compgen -G "kafka*/bin" > /dev/null; then
   ./rotom.bash/install-kafka.sh
 fi
 
+echo "BASH LOG: Setting up kafka config"
+./rotom.bash/setup-kafka.sh
+
 if $demo; then
   echo "BASH LOG: Setting up MySQL database in demo mode."
   ./rotom.bash/setup-mysql.sh -d

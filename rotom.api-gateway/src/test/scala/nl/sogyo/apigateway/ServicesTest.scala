@@ -15,7 +15,6 @@ import slick.jdbc.H2Profile.api.*
 
 import java.time.LocalDate
 import java.time.Month
-import java.time.ZoneOffset
 import java.util.UUID
 import scala.concurrent.duration.*
 
@@ -156,8 +155,8 @@ class ServicesTest extends CatsEffectSuite {
     val requestObject = LoanRequest(
       item = drill.id,
       borrower = jan.id,
-      dateStart = LocalDate.of(2001, Month.JANUARY, 1).atStartOfDay().atOffset(ZoneOffset.UTC),
-      dateEnd = LocalDate.of(2000, Month.JANUARY, 1).atStartOfDay().atOffset(ZoneOffset.UTC)
+      dateStart = LocalDate.of(2001, Month.JANUARY, 1).atStartOfDay(),
+      dateEnd = LocalDate.of(2000, Month.JANUARY, 1).atStartOfDay()
     )
     val jsonBody = loanRequestToJson(requestObject)
     val apiRequest = Request[IO](Method.POST, uri"/api/loan").withEntity(jsonBody)

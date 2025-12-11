@@ -1,12 +1,11 @@
 package nl.sogyo.persistence
 
-import slick.dbio.DBIO
-import slick.lifted.TableQuery
+import com.typesafe.scalalogging.Logger
+import slick.lifted.*
 
+import java.util.UUID
 import scala.concurrent.Await
 import scala.concurrent.duration.*
-import java.util.UUID
-import com.typesafe.scalalogging.Logger
 
 trait ProfileProvider {
   val profile: slick.jdbc.JdbcProfile
@@ -74,7 +73,16 @@ trait DatabaseReader extends ProfileProvider with Tables {
     if result.size > 1 then throw MultipleActiveLoansException(itemId)
     result.headOption
 
-  
+}
+
+trait DatabaseWriter extends DatabaseReader {
+
+  import profile.api.*
+
+  def insertNewLoans(loans: Seq[Loan]): Option[Int] =
+    val insert = loansTable ++= loans
+    exec(insert)
+
 }
 
 class MultipleEntriesException(
